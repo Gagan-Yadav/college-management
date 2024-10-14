@@ -1,19 +1,22 @@
 package com.yaduvanshi_brothers.api.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "faculties")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class FacultyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int facultyId;
+    private Integer facultyId;
 
     @Column(name = "faculty_name")
-    private int name;
+    private String name;
 
     @Column(name = "faculty_mobile")
     private long mobile;
@@ -34,6 +37,10 @@ public class FacultyEntity {
     private String departmentType;
 
     @Column(name = "sub_department")
-    private String subDepartent;
+    private String subDepartment;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_code")
+    private BranchesEntity branch;
 
 }

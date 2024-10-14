@@ -20,17 +20,17 @@ public class JwtUtility {
         return createToken(claims,username);
     }
 
-    private String createToken(Map<String,Object> claims, String subject){
+    private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .header().empty().add("type","JWT")
-                .and()
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+100*60*5))
+                .setClaims(claims)
+                .setSubject(subject)
+                .setHeaderParam("type", "JWT")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .signWith(getSigningKey())
                 .compact();
     }
+
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }

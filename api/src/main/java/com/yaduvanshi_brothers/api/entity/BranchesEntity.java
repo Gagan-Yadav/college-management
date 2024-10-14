@@ -1,9 +1,6 @@
 package com.yaduvanshi_brothers.api.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +30,10 @@ public class BranchesEntity {
     @Column(name="students")
     private List<String> students = new ArrayList<>();
 
-    @Column
-    private List<String> faculties = new ArrayList<>();
-
     @Column(name="hod_name")
     private String hodName;
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
+    private List<FacultyEntity> faculties = new ArrayList<>();
 
 }

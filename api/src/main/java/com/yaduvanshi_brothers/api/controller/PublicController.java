@@ -1,7 +1,9 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.entity.FacultyEntity;
 import com.yaduvanshi_brothers.api.entity.UserEntity;
 import com.yaduvanshi_brothers.api.service.CustomUserService;
+import com.yaduvanshi_brothers.api.service.FacultyService;
 import com.yaduvanshi_brothers.api.service.ImageService;
 import com.yaduvanshi_brothers.api.service.UserService;
 import com.yaduvanshi_brothers.api.utils.JwtUtility;
@@ -39,6 +41,9 @@ public class PublicController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private FacultyService facultyService;
+
     @GetMapping("/health-check")
     public ResponseEntity<?> healthCheckController(){
         return  ResponseEntity.status(HttpStatus.OK).body("server is working fine");
@@ -57,19 +62,9 @@ public class PublicController {
         }
     }
 
-    @PostMapping("/upload")
-    public String uploadImageIndb(@RequestPart("image") MultipartFile file) throws IOException {
-        imageService.uploadImageService(file);
-        return  "image uploaded successfully";
+    @PostMapping("/add")
+    public String addFacultyController(@RequestBody FacultyEntity facultyEntity){
+        facultyService.addFacultyService(facultyEntity);
+        return "faculty added successfully";
     }
-
-    @GetMapping("/{filename}")
-    public ResponseEntity<?> downloadImage(@PathVariable String filename) {
-        byte[] imageData = imageService.downloadImage(filename);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(imageData);
-    }
-
-
 }
