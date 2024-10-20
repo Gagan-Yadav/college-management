@@ -10,16 +10,11 @@ import com.yaduvanshi_brothers.api.utils.JwtUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/public")
@@ -52,8 +47,8 @@ public class PublicController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserEntity userDta){
         try{
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDta.getUserName(),userDta.getPassword()));
-            UserDetails userDetails = customUserService.loadUserByUsername(userDta.getUserName());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDta.getUsername(),userDta.getPassword()));
+            UserDetails userDetails = customUserService.loadUserByUsername(userDta.getUsername());
             String jwt = jwtUtility.generateToken(userDetails.getUsername());
             return new ResponseEntity<>(jwt,HttpStatus.OK);
         }catch(Exception e){
@@ -62,9 +57,10 @@ public class PublicController {
         }
     }
 
-    @PostMapping("/add")
-    public String addFacultyController(@RequestBody FacultyEntity facultyEntity){
-        facultyService.addFacultyService(facultyEntity);
-        return "faculty added successfully";
+    @PostMapping("/add-user")
+    public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
+        userService.adduserByAdminService(userEntity);
+        return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
     }
+
 }

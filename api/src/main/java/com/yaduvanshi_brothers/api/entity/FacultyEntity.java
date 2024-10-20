@@ -1,7 +1,14 @@
 package com.yaduvanshi_brothers.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "faculties")
@@ -43,4 +50,8 @@ public class FacultyEntity {
     @JoinColumn(name = "branch_code")
     private BranchesEntity branch;
 
+    // One Faculty can conduct many Lectures
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    @JsonIgnore // Prevent serialization
+    private List<LectureEntity> lectures = new ArrayList<>();
 }

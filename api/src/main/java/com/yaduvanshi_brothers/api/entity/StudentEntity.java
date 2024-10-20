@@ -1,10 +1,14 @@
 package com.yaduvanshi_brothers.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -41,9 +45,17 @@ public class StudentEntity {
     @Column
     private int semester;
 
-    @Column
-    private String branch;
+    // Many-to-Many with Branch
+    @ManyToMany
+    @JoinTable(
+            name = "student_branches",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "branch_code")
+    )
+    private List<BranchesEntity> branches = new ArrayList<>();
 
-//    @Column
-//    private Image image;
+    // Many-to-Many with Lecture
+    @ManyToMany(mappedBy = "students")
+    @JsonIgnore // Prevent serialization
+    private List<LectureEntity> lectures = new ArrayList<>();
 }

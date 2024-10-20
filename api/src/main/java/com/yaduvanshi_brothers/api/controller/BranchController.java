@@ -14,13 +14,13 @@ public class BranchController {
     @Autowired
     private BranchService branchService;
 
-    @PostMapping("/add")
+    @PostMapping("/add-branch")
     public String addBranchController(@RequestBody BranchesEntity branchData){
         branchService.addBranchService(branchData);
-        return "branch added successfully";
+        return "Branch added successfully";
     }
 
-    @GetMapping
+    @GetMapping("/get-all-branches")
     public List<BranchesEntity> allBranchesController(){
         return branchService.allBranchService();
     }

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,9 +29,9 @@ public class SpringSecurity {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/public/**","/send-mail/**","/image/**").permitAll()
-                        .requestMatchers("/user/**").authenticated()
-                        .requestMatchers("/admin/**","/branch/**","/faculty/**").hasRole("ADMIN")
+                                .requestMatchers("/public/**","/send-mail/**","/image/**").permitAll()
+                                .requestMatchers("/user/**").authenticated()
+                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**").hasRole("ADMIN")
 //                        .requestMatchers("/faculty/**")
                 )
                 .csrf(AbstractHttpConfigurer::disable)

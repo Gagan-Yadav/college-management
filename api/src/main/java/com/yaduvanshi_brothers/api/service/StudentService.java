@@ -10,28 +10,32 @@ import java.util.Optional;
 
 @Service
 public class StudentService {
+
     @Autowired
-    private StudentRespository studentRespository;
+    private StudentRespository studentRepository;
 
-    public List<StudentEntity> getAllStudentService(){
-        return studentRespository.findAll();
+    // Retrieve all students
+    public List<StudentEntity> getAllStudentService() {
+        return studentRepository.findAll();
     }
 
-    public Optional<StudentEntity> getStudentByIdService(int id){
-        Optional<StudentEntity> student = studentRespository.findById(id);
-        return student;
+    // Add a new student
+    public void addUserService(StudentEntity studentEntity) {
+        studentRepository.save(studentEntity);
     }
 
-    public void addUserService(StudentEntity studentData){
-        studentRespository.save(studentData);
+    // Get a student by ID
+    public Optional<StudentEntity> getStudentByIdService(int id) {
+        return studentRepository.findById(id);
     }
 
-    public void updateStudentById(StudentEntity student){
-        studentRespository.save(student);
+    // Update student details by ID
+    public void updateStudentById(StudentEntity studentEntity) {
+        studentRepository.save(studentEntity);
     }
 
+    // Delete student by ID
     public void deleteStudentById(int id) {
-        studentRespository.deleteById(id);
+        studentRepository.deleteById(id);
     }
-
 }

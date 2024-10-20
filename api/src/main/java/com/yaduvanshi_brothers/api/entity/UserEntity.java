@@ -17,7 +17,7 @@ public class UserEntity {
     private int userId;
 
     @Column
-    private String userName;
+    private String username;
 
     @Column
     private String password;

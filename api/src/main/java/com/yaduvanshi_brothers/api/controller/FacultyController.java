@@ -14,13 +14,13 @@ public class FacultyController {
     @Autowired
     private FacultyService facultyService;
 
-    @PostMapping("/add")
+    @PostMapping("/add-faculty")
     public String addFacultyController(@RequestBody FacultyEntity facultyEntity){
         facultyService.addFacultyService(facultyEntity);
-        return "faculty added successfully";
+        return "Faculty added successfully";
     }
 
-    @GetMapping
+    @GetMapping("/get-all-faculties")
     public List<FacultyEntity> allFacultiesController(){
         return facultyService.allFacultyService();
     }
