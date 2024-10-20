@@ -29,10 +29,10 @@ public class SpringSecurity {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(request -> request
-                                .requestMatchers("/public/**","/send-mail/**","/image/**").permitAll()
-                                .requestMatchers("/user/**").authenticated()
-                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**").hasRole("ADMIN")
-//                        .requestMatchers("/faculty/**")
+                                .requestMatchers("/public/**").permitAll()
+                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**").hasRole("ADMIN")
+                                .requestMatchers("/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**").hasRole("FACULTY")
+                                .requestMatchers("/student/**","/lectures/**").hasRole("STUDENT")
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

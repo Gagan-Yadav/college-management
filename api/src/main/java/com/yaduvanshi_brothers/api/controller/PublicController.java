@@ -57,10 +57,10 @@ public class PublicController {
         }
     }
 
-    @PostMapping("/add-user")
-    public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
-        userService.adduserByAdminService(userEntity);
-        return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
-    }
+//    @PostMapping("/add-user")
+//    public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
+//        userService.adduserByAdminService(userEntity);
+//        return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
+//    }
 
 }
