@@ -1,5 +1,6 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
 import com.yaduvanshi_brothers.api.service.FacultyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class FacultyController {
     }
 
     @GetMapping("/get-all-faculties")
-    public List<FacultyEntity> allFacultiesController(){
+    public List<FacultyDTO> allFacultiesController() {
         return facultyService.allFacultyService();
     }
+
 }

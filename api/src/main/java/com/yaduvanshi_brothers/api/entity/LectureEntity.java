@@ -1,6 +1,7 @@
 package com.yaduvanshi_brothers.api.entity;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yaduvanshi_brothers.api.entity.FacultyEntity;
+import com.yaduvanshi_brothers.api.entity.StudentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class LectureEntity {
     @Id
     @Column(name = "lecture_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int lectureId;
+    private Integer lectureId;
 
     @Column
     private int year;
@@ -48,12 +49,13 @@ public class LectureEntity {
     @Column(name = "room_number")
     private int roomNumber;
 
-    // Many-to-One relationship with Faculty
+    // Avoid circular dependency by ignoring this field
     @ManyToOne
     @JoinColumn(name = "faculty_id")
+    @JsonIgnore // Prevent serialization
     private FacultyEntity faculty;
 
-    // Many-to-Many relationship with Student
+    // Instead of returning the full StudentEntity, we can just return student IDs
     @ManyToMany
     @JoinTable(
             name = "lecture_students",

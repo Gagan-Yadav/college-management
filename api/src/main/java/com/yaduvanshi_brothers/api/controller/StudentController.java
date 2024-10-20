@@ -1,5 +1,7 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.StudentDTO;
+import com.yaduvanshi_brothers.api.entity.BranchesEntity;
 import com.yaduvanshi_brothers.api.entity.StudentEntity;
 import com.yaduvanshi_brothers.api.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student")
@@ -18,10 +21,30 @@ public class StudentController {
     private StudentService studentService;
 
     @GetMapping("/get-all-students")
-    public ResponseEntity<List<StudentEntity>> getAllStudentController(){
-        List<StudentEntity> allStudents = studentService.getAllStudentService();
-        return new ResponseEntity<>(allStudents, HttpStatus.OK);
+    public List<StudentDTO> getAllStudents() {
+        List<StudentEntity> students = studentService.getAllStudentService();
+
+        return students.stream().map(student -> {
+            StudentDTO dto = new StudentDTO();
+            dto.setStudentId(student.getStudentId());
+            dto.setRollNo(student.getRollNo());
+            dto.setStudentName(student.getStudentName());
+            dto.setEmail(student.getEmail());
+            dto.setMobile(student.getMobile());
+            dto.setAge(student.getAge());
+            dto.setAddress(student.getAddress());
+            dto.setYear(student.getYear());
+            dto.setSemester(student.getSemester());
+
+            // Convert the branches to branch codes
+            dto.setBranchCodes(student.getBranches().stream()
+                    .map(BranchesEntity::getBranchCode) // Ensure getBranchCode() is defined
+                    .collect(Collectors.toList()));
+
+            return dto;
+        }).collect(Collectors.toList());
     }
+
 
     @PostMapping("/add-new-student")
     public ResponseEntity<String> addStudentController(@RequestBody StudentEntity student){

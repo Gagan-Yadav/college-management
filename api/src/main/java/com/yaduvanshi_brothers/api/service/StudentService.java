@@ -26,7 +26,7 @@ public class StudentService {
 
     // Get a student by ID
     public Optional<StudentEntity> getStudentByIdService(int id) {
-        return studentRepository.findById(id);
+        return studentRepository.findById(String.valueOf(id));
     }
 
     // Update student details by ID
@@ -36,6 +36,6 @@ public class StudentService {
 
     // Delete student by ID
     public void deleteStudentById(int id) {
-        studentRepository.deleteById(id);
+        studentRepository.deleteById(String.valueOf(id));
     }
 }

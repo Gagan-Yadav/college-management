@@ -31,7 +31,7 @@ public class SpringSecurity {
         return http.authorizeHttpRequests(request -> request
                                 .requestMatchers("/public/**","/send-mail/**","/image/**").permitAll()
                                 .requestMatchers("/user/**").authenticated()
-                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**").hasRole("ADMIN")
 //                        .requestMatchers("/faculty/**")
                 )
                 .csrf(AbstractHttpConfigurer::disable)

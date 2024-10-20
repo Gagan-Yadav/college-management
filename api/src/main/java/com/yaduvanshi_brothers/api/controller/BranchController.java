@@ -1,5 +1,6 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.BranchDTO;
 import com.yaduvanshi_brothers.api.entity.BranchesEntity;
 import com.yaduvanshi_brothers.api.service.BranchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class BranchController {
     }
 
     @GetMapping("/get-all-branches")
-    public List<BranchesEntity> allBranchesController(){
-        return branchService.allBranchService();
+    public List<BranchDTO> getAllBranches() {
+        return branchService.getAllBranches();
     }
 }

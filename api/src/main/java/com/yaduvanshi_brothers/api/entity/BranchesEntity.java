@@ -20,7 +20,7 @@ public class BranchesEntity {
 
     @Id
     @Column(name = "branch_code")
-    private Integer branchCode;
+    private String branchCode;
 
     @Column(name = "branch_name")
     private String branchName;
@@ -30,16 +30,19 @@ public class BranchesEntity {
 
     // One Branch can have many Faculties
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
-    @JsonIgnore // Prevent serialization
+    @JsonIgnore // Prevent serialization to avoid circular dependency
     private List<FacultyEntity> faculties = new ArrayList<>();
 
-    // Many-to-Many relationship with StudentEntity
-    @ManyToMany(mappedBy = "branches")
-    private List<StudentEntity> students = new ArrayList<>();
-
-    // One Branch can offer many Subjects
+    // One Branch can offer many Subjects (directly shown in the same table)
     @ElementCollection
-    @CollectionTable(name = "branch_subjects", joinColumns = @JoinColumn(name = "branch_code"))
     @Column(name = "subject")
     private List<String> subjects = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "student_branches",
+            joinColumns = @JoinColumn(name = "branch_code"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<StudentEntity> students = new ArrayList<>();
 }

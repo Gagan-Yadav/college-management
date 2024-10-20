@@ -48,10 +48,11 @@ public class FacultyEntity {
 
     @ManyToOne
     @JoinColumn(name = "branch_code")
+
     private BranchesEntity branch;
 
     // One Faculty can conduct many Lectures
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
-    @JsonIgnore // Prevent serialization
+    @JsonIgnore
     private List<LectureEntity> lectures = new ArrayList<>();
 }

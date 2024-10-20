@@ -45,7 +45,7 @@ public class StudentEntity {
     @Column
     private int semester;
 
-    // Many-to-Many with Branch
+    // Many-to-Many relationship with Branch
     @ManyToMany
     @JoinTable(
             name = "student_branches",
@@ -54,7 +54,7 @@ public class StudentEntity {
     )
     private List<BranchesEntity> branches = new ArrayList<>();
 
-    // Many-to-Many with Lecture
+    // Prevent circular dependency by ignoring this field
     @ManyToMany(mappedBy = "students")
     @JsonIgnore // Prevent serialization
     private List<LectureEntity> lectures = new ArrayList<>();
