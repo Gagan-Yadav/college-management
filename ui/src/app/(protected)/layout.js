@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import {  ArrowLeftToLine, ArrowRightToLine } from 'lucide-react'
 import Sidebar from '@/components/Layouts/Sidebar.js'
-import TopNavBar from '@/components/Layouts/TopNavBar'
+import TopNavBar from '@/components/Layouts/TopNavbar'
 
 export default function Layout({ children }) {
   const [isOpen, setIsOpen] = useState(true)
