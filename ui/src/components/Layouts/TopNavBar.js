@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bell, MoreHorizontal, User, LogOut } from "lucide-react"
 import Cookies from 'js-cookie'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import axios from 'axios'
 import { toast, Toaster } from 'react-hot-toast'
 import {
@@ -26,7 +26,7 @@ export default function TopNavbar() {
   const router = useRouter()
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const paths = pathname.split("/").splice(1)
-  const username = Cookies.get("username")
+  const [username, setUsername] = useState("")
 
   const handleLogout = async () => {
     try {
@@ -42,6 +42,7 @@ export default function TopNavbar() {
         title: "Logged out successfully",
         description: "Redirecting to login page...",
         duration: 3000,
+        position: "bottom-right",
       })
 
       setTimeout(() => {
@@ -53,9 +54,15 @@ export default function TopNavbar() {
         title: "Logout failed",
         description: "An error occurred while logging out. Please try again.",
         variant: "destructive",
+        position: "bottom-right",
       })
     }
   }
+
+  useEffect(() => {
+    const username = Cookies.get("username")
+    setUsername(username)
+  }, [])  
 
   return (
     <>
@@ -82,7 +89,10 @@ export default function TopNavbar() {
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8 ring-2 ring-primary font-bold">
                     <AvatarImage src="" alt="" />
-                    <AvatarFallback>{(username?.charAt(0).toUpperCase())}</AvatarFallback>
+                    <AvatarFallback>
+  {username ? username.charAt(0).toUpperCase() : ""}
+</AvatarFallback>
+
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
