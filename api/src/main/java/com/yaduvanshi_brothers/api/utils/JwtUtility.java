@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,8 @@ import java.util.Map;
 @Component
 public class JwtUtility {
 
-    private static final String SECRET_KEY = "VA0EmFz6ccB2ys_wUN1JDjdlKYF-nTNmbgv79LkVZdo=";
+    // Use a secure way to manage secret keys in production
+    private static final String SECRET_KEY = "NbIfb2S2K3ysIv2QO4IugWbuu-3m_BRd1IVJlaiBiRM";
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -25,37 +27,58 @@ public class JwtUtility {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 1 day (24 hours)
                 .signWith(getSigningKey())
                 .compact();
     }
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token) // Correctly parse and verify the token
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            // Log the exception (e.g., invalid token, etc.)
+            return null;
+        }
     }
 
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+        Claims claims = extractAllClaims(token);
+        return claims != null ? claims.getSubject() : null;
     }
 
     public Date extractExpiration(String token) {
-        return extractAllClaims(token).getExpiration();
+        Claims claims = extractAllClaims(token);
+        return claims != null ? claims.getExpiration() : null;
     }
 
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date expiration = extractExpiration(token);
+        return expiration != null && expiration.before(new Date());
     }
 
     public Boolean validateToken(String token) {
-        // Check if the token is expired and validate it
-        return (!isTokenExpired(token) && extractAllClaims(token) != null);
+        if (token == null) {
+            System.out.println("Token is null.");
+            return false;
+        }
+        if (isTokenExpired(token)) {
+            System.out.println("Token is expired.");
+            return false;
+        }
+        if (extractAllClaims(token) == null) {
+            System.out.println("Token claims could not be extracted.");
+            return false;
+        }
+        System.out.println("Token is valid.");
+        return true;
     }
+
 }

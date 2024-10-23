@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/public")
 @Slf4j
@@ -77,20 +77,22 @@ public class PublicController {
             // Create a cookie to store the JWT
             // Create a cookie to store the JWT
             Cookie jwtCookie = new Cookie("jwt", jwt);
-            jwtCookie.setSecure(false); // Set true if using HTTPS
-            jwtCookie.setHttpOnly(true); // Prevent client-side access to the cookie
-            jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(86400); // 1 day expiration (24 hours)
+            jwtCookie.setHttpOnly(true); // Optional: makes the cookie HTTP only
+            jwtCookie.setSecure(false); // Set to true if you're using HTTPS
+            jwtCookie.setPath("/**"); // Make sure it’s accessible in all paths
+            jwtCookie.setMaxAge(86400);// Set the expiration time (in seconds)
+            response.addCookie(jwtCookie); // Add to response
+// 1 day expiration (24 hours)
 // jwtCookie.setSameSite("None"); // Set SameSite for cross-origin
 
 // Add the JWT cookie to the response
-            response.addCookie(jwtCookie);
+
 
 // Create a cookie to store the username
             Cookie usernameCookie = new Cookie("username", userDetails.getUsername());
             usernameCookie.setSecure(false); // Set true if using HTTPS
             usernameCookie.setHttpOnly(false); // Username cookie can be accessed client-side
-            usernameCookie.setPath("/");
+            usernameCookie.setPath("/**");
             usernameCookie.setMaxAge(86400); // 1 day expiration (24 hours)
 // usernameCookie.setSameSite("None"); // Set SameSite for cross-origin
 
@@ -101,7 +103,7 @@ public class PublicController {
             Cookie roleCookie = new Cookie("role", role);
             roleCookie.setSecure(false); // Set true if using HTTPS
             roleCookie.setHttpOnly(false); // Role cookie can be accessed client-side
-            roleCookie.setPath("/");
+            roleCookie.setPath("/**");
             roleCookie.setMaxAge(86400); // 1 day expiration (24 hours)
 // roleCookie.setSameSite("None"); // Set SameSite for cross-origin
 

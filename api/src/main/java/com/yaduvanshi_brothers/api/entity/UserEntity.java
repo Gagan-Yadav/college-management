@@ -26,8 +26,8 @@ public class UserEntity {
     @Column
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER) // Fetch roles eagerly
-    private List<String> roles; // Change from String to List<String>
+    @Column
+    private String roles; // Change from String to List<String>
 
     @Column
     private String email;

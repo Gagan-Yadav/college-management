@@ -27,33 +27,24 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtility jwtUtility;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = null;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String jwt = getJwtFromCookies(request);
+        System.out.println(jwt+" founded jwt token");
 
-        // Check for JWT in cookies
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) { // Assume cookie name is 'jwt'
-                    jwt = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-        String userName = null;
         if (jwt != null) {
-            userName = jwtUtility.extractUsername(jwt);
-        }
+            String userName = jwtUtility.extractUsername(jwt);
+            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = customUserService.loadUserByUsername(userName);
 
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = customUserService.loadUserByUsername(userName);
-
-            if (jwtUtility.validateToken(jwt)) {
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } else {
-                System.out.println("JWT validation failed.");
+                if (jwtUtility.validateToken(jwt)) {
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    System.out.println("JWT validation failed.");
+                }
             }
         } else {
             System.out.println("No JWT token found.");
@@ -61,5 +52,18 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private String getJwtFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                System.out.println("Checking Cookie Name: " + cookie.getName() + ", Value: " + cookie.getValue());
+                if ("jwt".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        } else {
+            System.out.println("No cookies found in the request.");
+        }
+        return null;
+    }
 
 }

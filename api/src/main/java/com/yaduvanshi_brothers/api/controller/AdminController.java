@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 // Allow all headers
-@CrossOrigin(origins = "http://localhost:3001", allowCredentials = "true")
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -49,7 +49,7 @@ public class AdminController {
         return "Faculty added successfully";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
+//    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
     @GetMapping("/get-all-users-on-this-website")
     public ResponseEntity<List<UserEntity>> userListController(){
         List<UserEntity> allUsers = userService.allUsersService();
@@ -57,8 +57,8 @@ public class AdminController {
     }
 
 
-
-    @PostMapping("/register-user")
+//    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
+    @PostMapping("/add-user")
     public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
         userService.adduserByAdminService(userEntity);
         return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);

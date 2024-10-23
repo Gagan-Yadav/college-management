@@ -20,11 +20,10 @@ public class CustomUserService implements UserDetailsService {
 
         if (user != null) {
             // Convert List<String> roles to String[] for Spring Security
-            String[] rolesArray = user.getRoles().toArray(new String[0]);
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .roles(rolesArray) // Use the roles array
+                    .roles(user.getRoles()) // Use the roles array
                     .build();
         }
         throw new UsernameNotFoundException("User not found: " + username);
