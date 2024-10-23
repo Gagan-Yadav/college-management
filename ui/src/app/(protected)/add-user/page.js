@@ -24,9 +24,10 @@ import {
 import { toast } from 'react-hot-toast'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { UserPlus, Mail, Phone, MapPin, Key, User } from 'lucide-react'
+import { UserPlus, Mail, Phone, MapPin, Key, User, Users, Search } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import axios from 'axios'
-
 const formSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -39,6 +40,7 @@ const formSchema = z.object({
 export default function UserManagement() {
   const [isLoading, setIsLoading] = useState(false)
   const [users, setUsers] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -55,11 +57,11 @@ export default function UserManagement() {
   async function onSubmit(values) {
     setIsLoading(true)
     try {
-      
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/register-user`, values, { withCredentials: true })
+      const response = await axios.post()
+      console.log("User added:", values)
       toast.success("User added successfully")
       form.reset()
-      setUsers(prevUsers => [...prevUsers, values])
+      setUsers(prevUsers => [...prevUsers, { ...values, id: Date.now() }])
     } catch (error) {
       toast.error("Failed to add user. Please try again.")
     } finally {
@@ -69,8 +71,21 @@ export default function UserManagement() {
 
   async function getUsers() {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-all-users-on-this-website`, { withCredentials: true })
-      setUsers(response.data)
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-all-users-on-this-website`)
+      console.log(response.data)
+      const mockUsers = [
+        { id: 1, username: "john_doe", roles: "STUDENT", email: "john@example.com", city: "New York" },
+        { id: 2, username: "jane_smith", roles: "FACULTY", email: "jane@example.com", city: "Los Angeles" },
+        { id: 3, username: "admin_user", roles: "ADMIN", email: "admin@example.com", city: "Chicago" },
+        { id: 4, username: "student1", roles: "STUDENT", email: "student1@example.com", city: "Houston" },
+        { id: 5, username: "faculty1", roles: "FACULTY", email: "faculty1@example.com", city: "Phoenix" },
+        { id: 6, username: "student2", roles: "STUDENT", email: "student2@example.com", city: "Philadelphia" },
+        { id: 7, username: "faculty2", roles: "FACULTY", email: "faculty2@example.com", city: "San Antonio" },
+        { id: 8, username: "student3", roles: "STUDENT", email: "student3@example.com", city: "San Diego" },
+        { id: 9, username: "faculty3", roles: "FACULTY", email: "faculty3@example.com", city: "Dallas" },
+        { id: 10, username: "admin2", roles: "ADMIN", email: "admin2@example.com", city: "San Jose" },
+      ]
+      setUsers(mockUsers)
     } catch (error) {
       console.error("Error while fetching users:", error)
     }
@@ -80,20 +95,26 @@ export default function UserManagement() {
     getUsers()
   }, [])
 
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.city.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div className="h-[calc(100vh-80px)] flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 gap-4">
-      <div className="w-full lg:w-1/2">
-        <Card className="w-full shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold text-center text-primary">Add New User</CardTitle>
-            <CardDescription className="text-center text-gray-500">
+    <div className="flex flex-col lg:flex-row  gap-4">
+      <div className="w-full lg:w-1/2 lg:max-w-md">
+        <Card className="w-full  shadow-md overflow-hidden">
+          <CardHeader className="bg-gray-50 p-4">
+            <CardTitle className="text-xl font-bold text-gray-800">Add New User</CardTitle>
+            <CardDescription className="text-gray-600">
               Enter the details of the new user below
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 gap-6">
+          <ScrollArea className="">
+            <CardContent className="p-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
                     control={form.control}
                     name="username"
@@ -103,7 +124,7 @@ export default function UserManagement() {
                         <FormControl>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input placeholder="johndoe" className="pl-10" {...field} />
+                            <Input placeholder="enter username" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -119,7 +140,7 @@ export default function UserManagement() {
                         <FormControl>
                           <div className="relative">
                             <Key className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input type="password" placeholder="******" className="pl-10" {...field} />
+                            <Input type="password" placeholder="enter password" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -135,7 +156,7 @@ export default function UserManagement() {
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a role" />
+                              <SelectValue placeholder="select role" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -157,7 +178,7 @@ export default function UserManagement() {
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input type="email" placeholder="john@example.com" className="pl-10" {...field} />
+                            <Input type="email" placeholder="enter email" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -173,7 +194,7 @@ export default function UserManagement() {
                         <FormControl>
                           <div className="relative">
                             <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input type="tel" placeholder="1234567890" className="pl-10" {...field} />
+                            <Input type="tel" placeholder="enter phone" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -187,48 +208,85 @@ export default function UserManagement() {
                       <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                          <div className="relative">
+                          <div className="relative ">
                             <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input placeholder="New York" className="pl-10" {...field} />
+                            <Input placeholder="enter city" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <UserPlus className="mr-2 h-4 w-4 animate-spin" />
-                      Adding User...
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Add User
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
+                  <Button type="submit" className="w-full bg-gray-600 hover:bg-gray-700 text-white" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <UserPlus className="mr-2 h-4 w-4 animate-spin" />
+                        Adding User...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Add User
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </ScrollArea>
         </Card>
       </div>
-      <div className="w-full lg:w-1/2 mt-4 lg:mt-0">
-        <Card className="w-full  shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-primary">All Users</CardTitle>
+      <div className="w-full lg:w-2/3 overflow-y-auto h-[calc(100vh-7.3rem)] rounded-lg">
+        <Card className="w-full  shadow-md">
+          <CardHeader className="bg-gray-50 p-4">
+            <div className="flex justify-between items-center mb-4">
+              <CardTitle className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                All Users
+              </CardTitle>
+              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                Total Users : {users.length}
+              </Badge>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search users..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-              {users.map((user, index) => (
-                <div key={index} className="mb-4 p-4 bg-white rounded-lg shadow">
-                  <h3 className="text-lg font-semibold">{user.username}</h3>
-                  <p className="text-sm text-gray-600">Role: {user.roles}</p>
-                  <p className="text-sm text-gray-600">Email: {user.email}</p>
-                </div>
-              ))}
+          <CardContent className="p-0">
+            <ScrollArea className="">
+              <div className="p-4 grid gap-2">
+                {filteredUsers.map((user) => (
+                  <Card key={user.id} className="hover:bg-gray-50 transition-colors">
+                    <CardContent className="p-3 flex items-center space-x-4">
+                      <Avatar className="h-8 w-8 ring-2 ring-primary font-semibold text-gray-500">
+                        <AvatarImage src="" alt="" />
+                        <AvatarFallback>
+                          {user.username ? user.username.charAt(0).toUpperCase() : ""}
+                        </AvatarFallback>
+
+                      </Avatar>
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-semibold text-gray-800">{user.username}</h3>
+                        <p className="text-sm text-gray-600">{user.email}</p>
+                        <p className="text-sm text-gray-500">{user.city}</p>
+                      </div>
+                      <Badge
+                        variant={user.roles === 'ADMIN' ? 'destructive' : user.roles === 'FACULTY' ? 'default' : 'secondary'}
+                        className="ml-auto px-4 py-1 text-xs"
+                      >
+                        {user.roles}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </ScrollArea>
           </CardContent>
         </Card>
