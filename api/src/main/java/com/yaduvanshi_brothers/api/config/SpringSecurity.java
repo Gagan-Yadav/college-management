@@ -33,6 +33,7 @@ public class SpringSecurity {
                                 .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**").hasRole("ADMIN")
                                 .requestMatchers("/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**").hasRole("FACULTY")
                                 .requestMatchers("/student/**","/lectures/**").hasRole("STUDENT")
+
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -51,7 +52,6 @@ public class SpringSecurity {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

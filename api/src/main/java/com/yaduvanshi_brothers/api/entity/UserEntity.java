@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -22,6 +26,15 @@ public class UserEntity {
     @Column
     private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER) // Fetch roles eagerly
+    private List<String> roles; // Change from String to List<String>
+
     @Column
-    private String roles;
+    private String email;
+
+    @Column
+    private String phone;
+
+    @Column
+    private String city;
 }

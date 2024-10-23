@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+// Allow all headers
+@CrossOrigin(origins = "http://localhost:3001", allowCredentials = "true")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -34,6 +35,8 @@ public class AdminController {
     @Autowired
     private BranchService branchService;
 
+
+
     @PostMapping("/add-branch")
     public String addBranchController(@RequestBody BranchesEntity branchData){
         branchService.addBranchService(branchData);
@@ -46,11 +49,14 @@ public class AdminController {
         return "Faculty added successfully";
     }
 
+    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
     @GetMapping("/get-all-users-on-this-website")
     public ResponseEntity<List<UserEntity>> userListController(){
         List<UserEntity> allUsers = userService.allUsersService();
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
+
+
 
     @PostMapping("/register-user")
     public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
@@ -66,6 +72,9 @@ public class AdminController {
             userInDB.setUsername(updatedData.getUsername());
             userInDB.setPassword(updatedData.getPassword());
             userInDB.setRoles(updatedData.getRoles());
+            userInDB.setEmail(updatedData.getEmail());
+            userInDB.setPhone(updatedData.getPhone());
+            userInDB.setCity(updatedData.getCity());
             userService.updateUserService(userInDB);
             return new ResponseEntity<>("User updated successfully", HttpStatus.ACCEPTED);
         }
