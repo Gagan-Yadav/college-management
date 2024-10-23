@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-    const token = request.cookies.get("jwt")?.value;
+    const token = request.cookies.get("username")?.value;
     if (!token && request.nextUrl.pathname === '/') {
         return NextResponse.redirect(new URL('/login', request.url));
     }
