@@ -56,10 +56,14 @@ export default function UserManagement() {
 
   async function onSubmit(values) {
     setIsLoading(true)
+    console.log(`${process.env.NEXT_PUBLIC_API_URL}/admin/register-user`,values)
     try {
-      const response = await axios.post()
-      console.log("User added:", values)
-      toast.success("User added successfully")
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/add-user`,values,{
+        withCredentials:true
+      })
+    
+      console.log("response",response)
+      toast.success("User added successfully 🎉")
       form.reset()
       setUsers(prevUsers => [...prevUsers, { ...values, id: Date.now() }])
     } catch (error) {
@@ -71,22 +75,11 @@ export default function UserManagement() {
 
   async function getUsers() {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-all-users-on-this-website`)
-      console.log(response.data)
-      const mockUsers = [
-        { id: 1, username: "john_doe", roles: "STUDENT", email: "john@example.com", city: "New York" },
-        { id: 2, username: "jane_smith", roles: "FACULTY", email: "jane@example.com", city: "Los Angeles" },
-        { id: 3, username: "admin_user", roles: "ADMIN", email: "admin@example.com", city: "Chicago" },
-        { id: 4, username: "student1", roles: "STUDENT", email: "student1@example.com", city: "Houston" },
-        { id: 5, username: "faculty1", roles: "FACULTY", email: "faculty1@example.com", city: "Phoenix" },
-        { id: 6, username: "student2", roles: "STUDENT", email: "student2@example.com", city: "Philadelphia" },
-        { id: 7, username: "faculty2", roles: "FACULTY", email: "faculty2@example.com", city: "San Antonio" },
-        { id: 8, username: "student3", roles: "STUDENT", email: "student3@example.com", city: "San Diego" },
-        { id: 9, username: "faculty3", roles: "FACULTY", email: "faculty3@example.com", city: "Dallas" },
-        { id: 10, username: "admin2", roles: "ADMIN", email: "admin2@example.com", city: "San Jose" },
-      ]
-      setUsers(mockUsers)
-    } catch (error) {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/get-all-users-on-this-website`,{
+        withCredentials:true
+      })
+      setUsers(response.data)
+        } catch (error) {
       console.error("Error while fetching users:", error)
     }
   }
@@ -262,8 +255,8 @@ export default function UserManagement() {
           <CardContent className="p-0">
             <ScrollArea className="">
               <div className="p-4 grid gap-2">
-                {filteredUsers.map((user) => (
-                  <Card key={user.id} className="hover:bg-gray-50 transition-colors">
+                {filteredUsers.map((user,index) => (
+                  <Card key={index} className="hover:bg-gray-50 transition-colors">
                     <CardContent className="p-3 flex items-center space-x-4">
                       <Avatar className="h-8 w-8 ring-2 ring-primary font-semibold text-gray-500">
                         <AvatarImage src="" alt="" />
@@ -273,7 +266,7 @@ export default function UserManagement() {
 
                       </Avatar>
                       <div className="flex-grow">
-                        <h3 className="text-lg font-semibold text-gray-800">{user.username}</h3>
+                        <h3 className="text-lg font-semibold text-gray-800">{user.username.charAt(0).toUpperCase() + user.username.slice(1)}</h3>
                         <p className="text-sm text-gray-600">{user.email}</p>
                         <p className="text-sm text-gray-500">{user.city}</p>
                       </div>

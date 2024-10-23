@@ -38,12 +38,7 @@ export default function TopNavbar() {
 
       setIsLogoutDialogOpen(false)
 
-      toast({
-        title: "Logged out successfully",
-        description: "Redirecting to login page...",
-        duration: 3000,
-        position: "bottom-right",
-      })
+      toast("Logged out successfully 🎉")
 
       setTimeout(() => {
         router.push("/login")
