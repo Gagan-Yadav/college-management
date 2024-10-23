@@ -1,12 +1,12 @@
 package com.yaduvanshi_brothers.api.service;
 
-import com.yaduvanshi_brothers.api.entity.UserEntity;
-import com.yaduvanshi_brothers.api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.yaduvanshi_brothers.api.entity.UserEntity;
+import com.yaduvanshi_brothers.api.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class CustomUserService implements UserDetailsService {
@@ -17,11 +17,14 @@ public class CustomUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByusername(username);
+
         if (user != null) {
+            // Convert List<String> roles to String[] for Spring Security
+            String[] rolesArray = user.getRoles().toArray(new String[0]);
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .roles(user.getRoles())
+                    .roles(rolesArray) // Use the roles array
                     .build();
         }
         throw new UsernameNotFoundException("User not found: " + username);

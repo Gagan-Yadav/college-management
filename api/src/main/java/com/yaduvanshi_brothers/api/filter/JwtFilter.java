@@ -4,6 +4,7 @@ import com.yaduvanshi_brothers.api.service.CustomUserService;
 import com.yaduvanshi_brothers.api.utils.JwtUtility;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,24 +28,37 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
-        String userName = null;
         String jwt = null;
-        if(authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
-            jwt = authorizationHeader.substring(7);
+
+        // Check for JWT in cookies
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) { // Assume cookie name is 'jwt'
+                    jwt = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        String userName = null;
+        if (jwt != null) {
             userName = jwtUtility.extractUsername(jwt);
         }
 
-        if(userName!=null){
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserService.loadUserByUsername(userName);
-            System.out.println(userDetails);
-            if(jwtUtility.validateToken(jwt)){
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+
+            if (jwtUtility.validateToken(jwt)) {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } else {
+                System.out.println("JWT validation failed.");
             }
+        } else {
+            System.out.println("No JWT token found.");
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
 
