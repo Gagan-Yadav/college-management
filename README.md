@@ -8,13 +8,16 @@ This is a comprehensive College Management Application developed using Spring Bo
 - User roles and permissions
 - department management
 
+## Backend - Spring Boot
+## Frontend - Next.js
+## Database - MySQL
+
 ## Setup Instructions
-Backend - Spring Boot
+
 ### Install Java
 Ensure that you have Java 17 installed on your system. You can verify the installation by running the following command:
 
 ```bash
-Copy code
 java -version
 ```
 
@@ -22,27 +25,21 @@ java -version
 Download and install Maven to manage dependencies and build the project.
 
 ```bash
-Clone the Repository
-Clone the project repository to your local machine:
-```
-
-```bash
 git clone https://github.com/Anku-yadav-001/college-management.git
 ```
 
 ```bash
-cd college-management-application
+cd college-management
 ```
 
 ```bash
 cd api
-Run the Spring Boot Application
-You can start the Spring Boot application using Maven:
 ```
+
+### Run the Spring Boot Application
 
 ```bash
 mvn spring-boot:run
-Alternatively, you can build the project and run the jar file:
 ```
 
 ```bash
