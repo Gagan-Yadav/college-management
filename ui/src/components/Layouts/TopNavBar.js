@@ -28,6 +28,7 @@ export default function TopNavbar() {
   const paths = pathname.split("/").splice(1)
   const [username, setUsername] = useState("")
 
+
   const handleLogout = async () => {
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/public/logout`, {}, { withCredentials: true })
@@ -45,12 +46,7 @@ export default function TopNavbar() {
       }, 3000)
     } catch (error) {
       console.error("Logout error:", error)
-      toast({
-        title: "Logout failed",
-        description: "An error occurred while logging out. Please try again.",
-        variant: "destructive",
-        position: "bottom-right",
-      })
+      toast("Logout failed 🤷‍♂️")
     }
   }
 
