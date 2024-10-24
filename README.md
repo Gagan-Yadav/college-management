@@ -8,9 +8,10 @@ This is a comprehensive College Management Application developed using Spring Bo
 - User roles and permissions
 - department management
 
-## Backend - Spring Boot
-## Frontend - Next.js
-## Database - MySQL
+## Technologies
+- Backend - Spring Boot
+- Frontend - Next.js
+- Database - MySQL
 
 ## Setup Instructions
 
