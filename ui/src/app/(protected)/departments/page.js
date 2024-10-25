@@ -3,12 +3,15 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { FaUserGraduate, FaChalkboardTeacher, FaUserTie, FaCode, FaPlus } from 'react-icons/fa'
 import Link from 'next/link'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function AllDepartments() {
     const [departments, setDepartments] = useState([])
+    const router = useRouter()
 
     useEffect(() => {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/branch/get-all-branches`,{
@@ -64,13 +67,24 @@ export default function AllDepartments() {
                     </div>
                     <span>{dept.faculties.length}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center">
                       <FaUserGraduate className="text-orange-600 mr-2" />
                       <span className="font-semibold">Student Count:</span>
                     </div>
                     <span>{dept.students.length}</span>
                   </div>
+                  <Button 
+    variant="outline" 
+    className="w-full mt-4"
+    onClick={() => {
+        router.push(`/departments/${dept.branchCode}/${dept.branchName.toLowerCase().replace(/\s+/g, '-')}/faculties`);
+    }}
+>
+    View All Faculties
+</Button>
+
+
                 </motion.div>
               </CardContent>
             </Card>

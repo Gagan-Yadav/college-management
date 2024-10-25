@@ -7,7 +7,7 @@ const menuItems = [
   { icon: MdOutlineSchool, text: 'Lectures', href: '/lectures' },
   { icon: MdAssignmentAdd, text: 'Assignments', href: '/assignments' },
   { icon: FaUserFriends, text: 'Students', href: '/students' },
-  { icon: FaUsers, text: 'Faculties', href: '/faculties' },
+  // { icon: FaUsers, text: 'Faculties', href: '/faculties' },
   { icon: MdVideoCall, text: 'Online Classes', href: '/online-classes' },
   { icon: MdAccountTree, text: 'Departments', href: '/departments' },
   { icon: GrAnnounce, text: 'Announcements', href: '/announcements' },

@@ -21,13 +21,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-export default function TopNavbar() {
+export default function TopNavBar() {
   const pathname = usePathname()
   const router = useRouter()
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const paths = pathname.split("/").splice(1)
   const [username, setUsername] = useState("")
-
 
   const handleLogout = async () => {
     try {
