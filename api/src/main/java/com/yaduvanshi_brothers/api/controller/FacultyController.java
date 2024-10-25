@@ -49,7 +49,7 @@ public class FacultyController {
             dto.setGender(faculty.getGender());
             dto.setDepartmentType(faculty.getDepartmentType());
             dto.setSubDepartment(faculty.getSubDepartment());
-            dto.setBranchCode(String.valueOf(faculty.getBranch()));
+            dto.setBranchCode(faculty.getBranch().getBranchCode());
 
 
             List<Integer> lectureIds = faculty.getLectures().stream()

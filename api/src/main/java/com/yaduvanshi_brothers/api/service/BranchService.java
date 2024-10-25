@@ -29,6 +29,11 @@ public class BranchService {
         return branches.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public BranchDTO getBranchByCode(String branchCode) {
+        Optional<BranchesEntity> optionalBranch = branchRepository.findById(branchCode);
+        return optionalBranch.map(this::convertToDTO).orElse(null);
+    }
+
     public void editBranch(String branchCode, BranchDTO branchDTO) {
         Optional<BranchesEntity> optionalBranch = branchRepository.findById(branchCode);
         if (optionalBranch.isPresent()) {

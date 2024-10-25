@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/branch")
@@ -18,6 +19,11 @@ public class BranchController {
     @GetMapping("/get-all-branches")
     public List<BranchDTO> getAllBranches() {
         return branchService.getAllBranches();
+    }
+
+    @GetMapping("/get-branch-by-code/{branchCode}")
+    public Optional<?> getBranchByCode(@PathVariable String branchCode) {
+        return Optional.ofNullable(branchService.getBranchByCode(branchCode));
     }
 
     @PostMapping("/add-branch")
