@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 @RestController
 @RequestMapping("/public")
 @Slf4j
@@ -58,60 +58,41 @@ public class PublicController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserEntity userData, HttpServletResponse response) {
+        System.out.println("user login cred from ui -- "+userData+"  "+ response);
         try {
             // Authenticate the user
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userData.getUsername(), userData.getPassword())
             );
 
-            // Load user details
             UserDetails userDetails = customUserService.loadUserByUsername(userData.getUsername());
 
-            // Generate JWT token
             String jwt = jwtUtility.generateToken(userDetails.getUsername());
 
-            // Get the user's role (assuming it's available in UserDetails or through your service)
             String role = userDetails.getAuthorities().stream()
-                    .findFirst().orElseThrow().getAuthority();  // Fetch the first role, or handle as per your requirement
-
-            // Create a cookie to store the JWT
-            // Create a cookie to store the JWT
+                    .findFirst().orElseThrow().getAuthority();
             Cookie jwtCookie = new Cookie("jwt", jwt);
-            jwtCookie.setHttpOnly(true); // Optional: makes the cookie HTTP only
-            jwtCookie.setSecure(false); // Set to true if you're using HTTPS
-            jwtCookie.setPath("/**"); // Make sure it’s accessible in all paths
-            jwtCookie.setMaxAge(86400);// Set the expiration time (in seconds)
-            response.addCookie(jwtCookie); // Add to response
-// 1 day expiration (24 hours)
-// jwtCookie.setSameSite("None"); // Set SameSite for cross-origin
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(3600);
+            response.addCookie(jwtCookie);
+            System.out.println("cookies setted - -" + jwtCookie);
 
-// Add the JWT cookie to the response
-
-
-// Create a cookie to store the username
             Cookie usernameCookie = new Cookie("username", userDetails.getUsername());
-            usernameCookie.setSecure(false); // Set true if using HTTPS
-            usernameCookie.setHttpOnly(false); // Username cookie can be accessed client-side
-            usernameCookie.setPath("/**");
-            usernameCookie.setMaxAge(86400); // 1 day expiration (24 hours)
-// usernameCookie.setSameSite("None"); // Set SameSite for cross-origin
-
-// Add the username cookie to the response
+            usernameCookie.setSecure(false);
+            usernameCookie.setHttpOnly(false);
+            usernameCookie.setPath("/");
+            usernameCookie.setMaxAge(3600);
             response.addCookie(usernameCookie);
 
-// Create a cookie to store the user role
             Cookie roleCookie = new Cookie("role", role);
             roleCookie.setSecure(false); // Set true if using HTTPS
             roleCookie.setHttpOnly(false); // Role cookie can be accessed client-side
-            roleCookie.setPath("/**");
-            roleCookie.setMaxAge(86400); // 1 day expiration (24 hours)
-// roleCookie.setSameSite("None"); // Set SameSite for cross-origin
-
-// Add the role cookie to the response
+            roleCookie.setPath("/");// allow for all paths
+            roleCookie.setMaxAge(3600); // 1 day expiration (24 hours)
             response.addCookie(roleCookie);
 
-
-            // Return success response
             return ResponseEntity.ok("Login successful");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect username or password");
@@ -120,28 +101,25 @@ public class PublicController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        // Clear JWT Cookie
         Cookie jwtCookie = new Cookie("jwt", null);
         jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0); // Expire the cookie immediately
+        jwtCookie.setMaxAge(0);
         jwtCookie.setHttpOnly(false);
         response.addCookie(jwtCookie);
 
         // Clear Username Cookie
         Cookie usernameCookie = new Cookie("username", null);
         usernameCookie.setPath("/");
-        usernameCookie.setMaxAge(0); // Expire the cookie immediately
+        usernameCookie.setMaxAge(0);
         usernameCookie.setHttpOnly(false);
         response.addCookie(usernameCookie);
 
         // Clear Role Cookie
         Cookie roleCookie = new Cookie("role", null);
         roleCookie.setPath("/");
-        roleCookie.setMaxAge(0); // Expire the cookie immediately
+        roleCookie.setMaxAge(0);
         roleCookie.setHttpOnly(false);
         response.addCookie(roleCookie);
-
-        // Additional cleanup can be done here (e.g., invalidating session)
 
         return ResponseEntity.ok("Logout successful...");
     }

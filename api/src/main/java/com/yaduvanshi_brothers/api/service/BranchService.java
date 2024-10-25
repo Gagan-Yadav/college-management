@@ -2,15 +2,16 @@ package com.yaduvanshi_brothers.api.service;
 
 import com.yaduvanshi_brothers.api.DTOs.BranchDTO;
 import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
-import com.yaduvanshi_brothers.api.DTOs.StudentDTO; // Import StudentDTO
+import com.yaduvanshi_brothers.api.DTOs.StudentDTO;
 import com.yaduvanshi_brothers.api.entity.BranchesEntity;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
-import com.yaduvanshi_brothers.api.entity.StudentEntity; // Import StudentEntity
+import com.yaduvanshi_brothers.api.entity.StudentEntity;
 import com.yaduvanshi_brothers.api.repository.BranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +29,21 @@ public class BranchService {
         return branches.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public void editBranch(String branchCode, BranchDTO branchDTO) {
+        Optional<BranchesEntity> optionalBranch = branchRepository.findById(branchCode);
+        if (optionalBranch.isPresent()) {
+            BranchesEntity branchEntity = optionalBranch.get();
+            branchEntity.setBranchName(branchDTO.getBranchName());
+            branchEntity.setHodName(branchDTO.getHodName());
+            branchEntity.setSubjects(branchDTO.getSubjects());
+            branchRepository.save(branchEntity);
+        }
+    }
+
+    public void deleteBranch(String branchCode) {
+        branchRepository.deleteById(branchCode);
+    }
+
     private BranchDTO convertToDTO(BranchesEntity branch) {
         BranchDTO dto = new BranchDTO();
         dto.setBranchCode(branch.getBranchCode());
@@ -35,17 +51,15 @@ public class BranchService {
         dto.setHodName(branch.getHodName());
         dto.setSubjects(branch.getSubjects());
 
-        // Map faculties to FacultyDTO
         List<FacultyDTO> facultyDTOs = branch.getFaculties().stream()
                 .map(this::convertToFacultyDTO)
                 .collect(Collectors.toList());
         dto.setFaculties(facultyDTOs);
 
-        // Map students to StudentDTO
-        List<StudentDTO> studentDTOs = branch.getStudents().stream() // Ensure you have a getter for students in BranchesEntity
+        List<StudentDTO> studentDTOs = branch.getStudents().stream()
                 .map(this::convertToStudentDTO)
                 .collect(Collectors.toList());
-        dto.setStudents(studentDTOs); // Assuming you added this field in BranchDTO
+        dto.setStudents(studentDTOs);
 
         return dto;
     }
@@ -64,7 +78,7 @@ public class BranchService {
         return facultyDTO;
     }
 
-    private StudentDTO convertToStudentDTO(StudentEntity student) { // Add this method to convert StudentEntity to StudentDTO
+    private StudentDTO convertToStudentDTO(StudentEntity student) {
         StudentDTO studentDTO = new StudentDTO();
         studentDTO.setStudentId(student.getStudentId());
         studentDTO.setRollNo(student.getRollNo());
@@ -76,11 +90,9 @@ public class BranchService {
         studentDTO.setYear(student.getYear());
         studentDTO.setSemester(student.getSemester());
 
-        // Convert branch codes to a list (you may want to modify this based on your actual requirements)
-        List<String> branchCodes = student.getBranches().stream()
-                .map(BranchesEntity::getBranchCode)
-                .collect(Collectors.toList());
-        studentDTO.setBranchCodes(branchCodes);
+        if (student.getBranch() != null) {
+            studentDTO.setBranchCode(student.getBranch().getBranchCode());
+        }
 
         return studentDTO;
     }

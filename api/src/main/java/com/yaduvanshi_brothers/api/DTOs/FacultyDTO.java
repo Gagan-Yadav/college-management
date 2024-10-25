@@ -21,6 +21,7 @@ public class FacultyDTO {
     private String gender;
     private String departmentType;
     private String subDepartment;
-    private Integer branchCode; // Include branch code
-    private List<Integer> lectureIds; // List to hold lecture IDs
+    private String branchCode;
+    private List<Integer> lectureIds;
+    private List<LectureDTO> lectures;
 }

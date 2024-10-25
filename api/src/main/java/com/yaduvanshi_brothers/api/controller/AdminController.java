@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-// Allow all headers
 
 @RestController
 @RequestMapping("/admin")
@@ -34,6 +37,14 @@ public class AdminController {
 
     @Autowired
     private BranchService branchService;
+
+    @Autowired
+    private  EmailService emailService;
+
+    String pass = null;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ConcurrentHashMap<String, UserEntity> userMap = new ConcurrentHashMap<>();
 
 
 
@@ -56,13 +67,121 @@ public class AdminController {
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-
-//    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
     @PostMapping("/add-user")
-    public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity){
+    public ResponseEntity<String> userUserByAdminController(@RequestBody UserEntity userEntity) {
+        // Add user by admin service
+        pass = userEntity.getPassword();
+        System.out.println("user adding by admin "+ userEntity.getPassword());
         userService.adduserByAdminService(userEntity);
+        String username = userEntity.getUsername();
+        String capitalizedUsername = username.substring(0, 1).toUpperCase() + username.substring(1);
+
+        String to = userEntity.getEmail();
+        String subject = "Welcome to College Management Application";
+
+        String body = "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "<style>"
+                + "body { font-family: Arial, sans-serif; line-height: 1.5; color: #000000; }"
+                + "h3 { color: #4CAF50; font-size: 20px; }"
+                + "p { font-size: 12px; color: #000000; line-height: 1.2; }"
+                + "h4 { font-size: 13px; color: #000000; line-height: 1.5; }"
+                + ".email-body { padding: 20px; border: 1px solid #ddd; border-radius: 5px; }"
+                + ".email-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; color: #000000; }"
+                + ".logo { max-width: 100px; margin-bottom: 20px; border-radius: 50%; }"
+                + "</style>"
+                + "</head>"
+                + "<body>"
+                + "<div class='email-body'>"
+                + "<img src='https://w7.pngwing.com/pngs/1005/782/png-transparent-student-college-university-term-paper-student-management-angle-people-logo.png' class='logo' alt='College Logo' />"
+                + "<h3>Welcome, " + capitalizedUsername + "!</h3>"
+                + "<p>We are excited to inform you that your registration has been successfully completed.</p>"
+                + "<p>You will soon receive your user_id and password, which will give you access to our system.</p>"
+                + "<h4>If you have any questions or need assistance, feel free to reach out to our support team.</h4>"
+                + "<div class='email-footer'>"
+                + "<p>Best Regards,</p>"
+                + "<p><strong>College Management Team</strong></p>"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+
+        emailService.sendMailService(to, subject, body);
+
+        userMap.put(userEntity.getEmail(), userEntity);
+
+        scheduleCredentialEmail(userEntity);
+
+        System.out.println("user added by admin ");
         return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
     }
+
+    private void scheduleCredentialEmail(UserEntity userEntity) {
+        System.out.println("inside the schedule email credentials "+userEntity.getPassword());
+        scheduler.schedule(() -> sendCredentialEmail(userEntity), 2, TimeUnit.MINUTES);
+    }
+    private void sendCredentialEmail(UserEntity userEntity) {
+
+        System.out.println("inside the send scheduled email "+userEntity.getPassword());
+        String username = userEntity.getUsername();
+        String password = userEntity.getPassword();
+        String role = userEntity.getRoles();
+
+        String capitalizedUsername = username.substring(0, 1).toUpperCase() + username.substring(1);
+
+        String credentialBody = createCredentialEmailBody(capitalizedUsername,role, username);
+        String to = userEntity.getEmail();
+        String subject = "Your Access Credentials";
+
+        emailService.sendMailService(to, subject, credentialBody);
+    }
+
+    private String createCredentialEmailBody(String username, String role, String name) {
+        return "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "<style>"
+                + "body { font-family: Arial, sans-serif; line-height: 1.5; color: #333; background-color: #f4f4f4; margin: 0; padding: 0; }"
+                + ".container { width: 100%; padding: 20px; }"
+                + ".email-body { background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }"
+                + "h3 { color: #4CAF50; font-size: 24px; margin-bottom: 10px; }"
+                + "p { font-size: 14px; color: #555; line-height: 1.6; }"
+                + "h4 { font-size: 16px; color: #333; margin: 15px 0; }"
+                + "ul { list-style-type: none; padding: 0; }"
+                + "li { background-color: #e7f7e8; margin: 10px 0; padding: 10px; border-radius: 5px; }"
+                + ".email-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; color: #777; font-size: 12px; text-align: center; }"
+                + ".button { display: inline-block; padding: 10px 20px; color: white; background-color: #4CAF50; border: none; border-radius: 5px; text-decoration: none; font-weight: bold; }"
+                + ".logo { max-width: 120px; margin-bottom: 20px; }"
+                + "</style>"
+                + "</head>"
+                + "<body>"
+                + "<div class='container'>"
+                + "<div class='email-body'>"
+                + "<img src='https://w7.pngwing.com/pngs/1005/782/png-transparent-student-college-university-term-paper-student-management-angle-people-logo.png' class='logo' alt='College Logo' />"
+                + "<h3>Hey " + username + ",</h3>"
+                + "<p>We’re thrilled to welcome you to our platform! It’s time to get started.</p>"
+                + "<h4>Your Credentials:</h4>"
+                + "<ul>"
+                + "<li><strong>Username:</strong> " + name + "</li>"
+                + "<li><strong>Password:</strong> " + pass + "</li>"
+                + "<li><strong>Role:</strong> " + role + "</li>"
+                + "</ul>"
+                + "<p style='text-align: center;'>"
+                + "<a href='#' class='button'>Access Platform</a>"
+                + "</p>"
+                + "<div class='email-footer'>"
+                + "<p>Best Regards,</p>"
+                + "<p><strong>College Management Team</strong></p>"
+                + "</div>"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+    }
+
+
 
     @PatchMapping("/update-user-by-id/{id}")
     public ResponseEntity<String> updateUserByIdController(@RequestBody UserEntity updatedData, @PathVariable int id){
@@ -103,7 +222,7 @@ public class AdminController {
 
     @PostMapping("/add-new-student")
     public ResponseEntity<String> addStudentController(@RequestBody StudentEntity student){
-        studentService.addUserService(student);
+        studentService.addStudentService(student);
         return new ResponseEntity<>("Student added successfully", HttpStatus.CREATED);
     }
 
@@ -126,7 +245,7 @@ public class AdminController {
             existingStudent.setAddress(student.getAddress());
             existingStudent.setYear(student.getYear());
             existingStudent.setSemester(student.getSemester());
-            existingStudent.setBranches(student.getBranches());
+            existingStudent.setBranch(student.getBranch());
 
             studentService.updateStudentById(existingStudent);
             return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
@@ -167,7 +286,7 @@ public class AdminController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
+//            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -175,7 +294,7 @@ public class AdminController {
         }).collect(Collectors.toList());
     }
 
-    // Get lecture by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<LectureDTO> getLectureById(@PathVariable int id) {
         LectureEntity lecture = lectureService.getLectureById(id);
@@ -188,7 +307,7 @@ public class AdminController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
+//            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -198,7 +317,6 @@ public class AdminController {
         }
     }
 
-    // Search lecture by subject name
     @GetMapping("/search-by-subject")
     public List<LectureDTO> searchLecturesBySubject(@RequestParam String subject) {
         List<LectureEntity> lectures = lectureService.findLecturesBySubject(subject);
@@ -211,7 +329,7 @@ public class AdminController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
+//            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -219,7 +337,7 @@ public class AdminController {
         }).collect(Collectors.toList());
     }
 
-    // Sort lectures by any field in ascending/descending order
+
     @GetMapping("/sort")
     public List<LectureDTO> sortLectures(
             @RequestParam(defaultValue = "lectureId") String sortBy,
@@ -237,7 +355,7 @@ public class AdminController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
+//            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));

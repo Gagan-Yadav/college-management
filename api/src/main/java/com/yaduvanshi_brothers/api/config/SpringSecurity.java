@@ -28,6 +28,7 @@ public class SpringSecurity {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("spring security starting ....");
         return http.authorizeHttpRequests(request -> request
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**").hasRole("ADMIN")
@@ -38,6 +39,7 @@ public class SpringSecurity {
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 
 
@@ -50,6 +52,8 @@ public class SpringSecurity {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        System.out.println("spring password generated ....");
+        System.out.println("password encoder "+ new BCryptPasswordEncoder());
         return new BCryptPasswordEncoder();
     }
     @Bean

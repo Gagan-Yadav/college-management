@@ -35,13 +35,70 @@ public class FacultyController {
 
 
     @GetMapping("/get-all-faculties")
-    public List<FacultyDTO> allFacultiesController() {
-        return facultyService.allFacultyService();
+    public List<FacultyDTO> getAllFaculties() {
+        List<FacultyEntity> faculties = facultyService.allFacultyService1();
+
+        return faculties.stream().map(faculty -> {
+            FacultyDTO dto = new FacultyDTO();
+            dto.setFacultyId(faculty.getFacultyId());
+            dto.setName(faculty.getName());
+            dto.setMobile(faculty.getMobile());
+            dto.setEmail(faculty.getEmail());
+            dto.setSalary(faculty.getSalary());
+            dto.setDesignation(faculty.getDesignation());
+            dto.setGender(faculty.getGender());
+            dto.setDepartmentType(faculty.getDepartmentType());
+            dto.setSubDepartment(faculty.getSubDepartment());
+            dto.setBranchCode(String.valueOf(faculty.getBranch()));
+
+
+            List<Integer> lectureIds = faculty.getLectures().stream()
+                    .map(LectureEntity::getLectureId)
+                    .collect(Collectors.toList());
+            dto.setLectureIds(lectureIds);
+
+            List<LectureDTO> lectureDTOs = faculty.getLectures().stream().map(lecture -> {
+                LectureDTO lectureDTO = new LectureDTO();
+                lectureDTO.setLectureId(lecture.getLectureId());
+                lectureDTO.setYear(lecture.getYear());
+                lectureDTO.setSemester(lecture.getSemester());
+                lectureDTO.setDepartment(lecture.getDepartment());
+                lectureDTO.setSubject(lecture.getSubject());
+                lectureDTO.setStartFrom(lecture.getStartFrom());
+                lectureDTO.setTill(lecture.getTill());
+                lectureDTO.setRoomNumber(lecture.getRoomNumber());
+                lectureDTO.setFacultyId(faculty.getFacultyId());
+
+                List<Integer> studentIds = lecture.getStudents().stream()
+                        .map(StudentEntity::getStudentId)
+                        .collect(Collectors.toList());
+                lectureDTO.setStudentIds(studentIds);
+
+                return lectureDTO;
+            }).collect(Collectors.toList());
+
+            dto.setLectures(lectureDTOs);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+
+
+    @PostMapping("/add-faculty")
+    public ResponseEntity<String> addFaculty(@RequestBody FacultyEntity facultyEntity) {
+        try {
+            facultyService.addFacultyService(facultyEntity);
+            return ResponseEntity.ok("Faculty added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/add-new-student")
     public ResponseEntity<String> addStudentController(@RequestBody StudentEntity student){
-        studentService.addUserService(student);
+        studentService.addStudentService(student);
         return new ResponseEntity<>("Student added successfully", HttpStatus.CREATED);
     }
 
@@ -64,7 +121,7 @@ public class FacultyController {
             existingStudent.setAddress(student.getAddress());
             existingStudent.setYear(student.getYear());
             existingStudent.setSemester(student.getSemester());
-            existingStudent.setBranches(student.getBranches());
+            existingStudent.setBranch(student.getBranch());
 
             studentService.updateStudentById(existingStudent);
             return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
@@ -105,7 +162,6 @@ public class FacultyController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -113,7 +169,6 @@ public class FacultyController {
         }).collect(Collectors.toList());
     }
 
-    // Get lecture by ID
     @GetMapping("/{id}")
     public ResponseEntity<LectureDTO> getLectureById(@PathVariable int id) {
         LectureEntity lecture = lectureService.getLectureById(id);
@@ -126,7 +181,6 @@ public class FacultyController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -149,7 +203,6 @@ public class FacultyController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));
@@ -157,7 +210,6 @@ public class FacultyController {
         }).collect(Collectors.toList());
     }
 
-    // Sort lectures by any field in ascending/descending order
     @GetMapping("/sort")
     public List<LectureDTO> sortLectures(
             @RequestParam(defaultValue = "lectureId") String sortBy,
@@ -175,7 +227,6 @@ public class FacultyController {
             dto.setSubject(lecture.getSubject());
             dto.setStartFrom(lecture.getStartFrom());
             dto.setTill(lecture.getTill());
-            dto.setFacultyName(lecture.getFacultyName());
             dto.setRoomNumber(lecture.getRoomNumber());
             dto.setFacultyId(lecture.getFaculty() != null ? lecture.getFaculty().getFacultyId() : null);
             dto.setStudentIds(lecture.getStudents().stream().map(StudentEntity::getStudentId).collect(Collectors.toList()));

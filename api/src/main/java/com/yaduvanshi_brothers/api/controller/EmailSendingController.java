@@ -1,6 +1,6 @@
 package com.yaduvanshi_brothers.api.controller;
 
-import com.yaduvanshi_brothers.api.entity.EmailRequestDTO;
+import com.yaduvanshi_brothers.api.DTOs.EmailRequestDTO;
 import com.yaduvanshi_brothers.api.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

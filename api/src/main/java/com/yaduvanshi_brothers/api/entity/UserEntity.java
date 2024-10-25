@@ -27,7 +27,7 @@ public class UserEntity {
     private String password;
 
     @Column
-    private String roles; // Change from String to List<String>
+    private String roles;
 
     @Column
     private String email;

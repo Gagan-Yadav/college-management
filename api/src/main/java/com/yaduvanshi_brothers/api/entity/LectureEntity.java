@@ -43,25 +43,20 @@ public class LectureEntity {
     @Column(name = "till")
     private Date till;
 
-    @Column(name = "faculty_name")
-    private String facultyName;
-
     @Column(name = "room_number")
     private int roomNumber;
 
-    // Avoid circular dependency by ignoring this field
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "faculty_id")
-    @JsonIgnore // Prevent serialization
+    @JsonIgnore
     private FacultyEntity faculty;
 
-    // Instead of returning the full StudentEntity, we can just return student IDs
     @ManyToMany
     @JoinTable(
             name = "lecture_students",
             joinColumns = @JoinColumn(name = "lecture_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnore // Prevent serialization
+    @JsonIgnore
     private List<StudentEntity> students = new ArrayList<>();
 }

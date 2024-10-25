@@ -32,6 +32,14 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = getJwtFromCookies(request);
         System.out.println(jwt+" founded jwt token");
 
+        String requestURI = request.getRequestURI();
+
+        // Skip JWT token validation for public routes
+        if (requestURI.startsWith("/public")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (jwt != null) {
             String userName = jwtUtility.extractUsername(jwt);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -51,8 +51,6 @@ public class FacultyEntity {
 
     private BranchesEntity branch;
 
-    // One Faculty can conduct many Lectures
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<LectureEntity> lectures = new ArrayList<>();
 }

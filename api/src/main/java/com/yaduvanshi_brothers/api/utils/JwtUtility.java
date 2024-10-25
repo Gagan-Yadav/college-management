@@ -14,7 +14,6 @@ import java.util.Map;
 @Component
 public class JwtUtility {
 
-    // Use a secure way to manage secret keys in production
     private static final String SECRET_KEY = "NbIfb2S2K3ysIv2QO4IugWbuu-3m_BRd1IVJlaiBiRM";
 
     public String generateToken(String username) {
@@ -27,10 +26,11 @@ public class JwtUtility {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 1 day (24 hours)
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour (60 minutes)
                 .signWith(getSigningKey())
                 .compact();
     }
+
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
@@ -44,7 +44,6 @@ public class JwtUtility {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            // Log the exception (e.g., invalid token, etc.)
             return null;
         }
     }

@@ -1,6 +1,5 @@
 package com.yaduvanshi_brothers.api.DTOs;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +16,6 @@ public class BranchDTO {
     private String branchName;
     private String hodName;
     private List<String> subjects;
-    private List<FacultyDTO> faculties;// Just as an example
+    private List<FacultyDTO> faculties;
     private List<StudentDTO> students;
 }

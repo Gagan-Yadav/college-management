@@ -1,4 +1,4 @@
-package com.yaduvanshi_brothers.api.entity;
+package com.yaduvanshi_brothers.api.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

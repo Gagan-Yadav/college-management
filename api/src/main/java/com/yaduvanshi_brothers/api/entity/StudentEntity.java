@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Table(name = "student")
 @Getter
@@ -45,17 +44,12 @@ public class StudentEntity {
     @Column
     private int semester;
 
-    // Many-to-Many relationship with Branch
-    @ManyToMany
-    @JoinTable(
-            name = "student_branches",
-            joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "branch_code")
-    )
-    private List<BranchesEntity> branches = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "branch_code")
+    private BranchesEntity branch;
 
-    // Prevent circular dependency by ignoring this field
     @ManyToMany(mappedBy = "students")
-    @JsonIgnore // Prevent serialization
+    @JsonIgnore
     private List<LectureEntity> lectures = new ArrayList<>();
+
 }

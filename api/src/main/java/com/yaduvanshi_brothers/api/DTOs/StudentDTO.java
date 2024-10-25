@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,5 +20,6 @@ public class StudentDTO {
     private String address;
     private int year;
     private int semester;
-    private List<String> branchCodes; // This should match the type returned by getBranchCode()
+    private String branchCode;
+    private List<LectureDTO> lectures;
 }
