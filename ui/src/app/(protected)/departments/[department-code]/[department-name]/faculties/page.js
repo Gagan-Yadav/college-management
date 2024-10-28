@@ -13,7 +13,7 @@ export default function DepartmentPage() {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/branch/get-branch-by-code/${department}`,{
             withCredentials: true
         })
-        console.log("response", response.data)
+        console.log("response faculties", response.data)
         setDepartmentDetails(response.data)
     }
 
