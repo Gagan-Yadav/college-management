@@ -10,6 +10,8 @@ import com.yaduvanshi_brothers.api.repository.BranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,9 +82,17 @@ public class BranchService {
         facultyDTO.setGender(faculty.getGender());
         facultyDTO.setDepartmentType(faculty.getDepartmentType());
         facultyDTO.setSubDepartment(faculty.getSubDepartment());
+
+        // Map the imageData, converting to Base64 if necessary
+        if (faculty.getImageEntity() != null) {
+            facultyDTO.setImageUrl("http://localhost:8080/image/" + faculty.getImageEntity().getId());
+        } else {
+            facultyDTO.setImageUrl("default/image/url");  // Optional: Set a default image URL if no image is found
+        }
+
+
         return facultyDTO;
     }
-
     private StudentDTO convertToStudentDTO(StudentEntity student) {
         StudentDTO studentDTO = new StudentDTO();
         studentDTO.setStudentId(student.getStudentId());

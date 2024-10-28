@@ -54,11 +54,11 @@ public class AdminController {
         return "Branch added successfully";
     }
 
-    @PostMapping("/add-faculty")
-    public String addFacultyController(@RequestBody FacultyEntity facultyEntity){
-        facultyService.addFacultyService(facultyEntity);
-        return "Faculty added successfully";
-    }
+//    @PostMapping("/add-faculty")
+//    public String addFacultyController(@RequestBody FacultyEntity facultyEntity){
+//        facultyService.addFacultyService(facultyEntity);
+//        return "Faculty added successfully";
+//    }
 
 //    @CrossOrigin(origins = "http://localhost:3000/", allowCredentials = "true")
     @GetMapping("/get-all-users-on-this-website")

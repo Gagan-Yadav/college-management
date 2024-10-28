@@ -22,7 +22,7 @@ public class ImageEntity {
     @Column(name = "image_type")
     private String type;
 
-    @Column(name = "image_data", columnDefinition = "LONGBLOB")
-    @Lob
+    @Column(columnDefinition = "LONGBLOB",unique = true)
+    @Lob // Use @Lob for large objects like images
     private byte[] image;
 }
