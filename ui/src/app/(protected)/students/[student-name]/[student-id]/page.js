@@ -1,4 +1,5 @@
 "use client"
+
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import axios from 'axios'
@@ -7,92 +8,97 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { Edit, Mail, BookOpen, Trash2 } from 'lucide-react'
+import { Edit, Mail, BookOpen, Trash2, CreditCard, ClipboardList } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LiaIdCard } from 'react-icons/lia'
-import { TbHandClick } from "react-icons/tb";
-import FacultyDetails from '@/components/FacultyDetails'
-import EditFaculty from '@/components/EditFaculty'
-import SendEmail from '@/components/SendEmail'
-import AssignLecture from '@/components/AssignLecture'
-import FacultyIdCard from '@/components/FacultyIdCard'
+import { TbClick } from "react-icons/tb"
+import StudentDetails from '@/components/StudentDetails'
+import EmailSendStudent from '@/components/EmailSendStudent'
+// import StudentLectures from '@/components/StudentLectures'
+import StudentIdCard from '@/components/StudentIdCard'
+// import StudentAttendance from '@/components/StudentAttendance'
 import { usePathname } from 'next/navigation'
-import { TbClick } from "react-icons/tb";
-export default function FacultyManagement() {
-  const [facultyDetails, setFacultyDetails] = useState({})
+import EditStudent from '@/components/EditStudent'
+
+export default function StudentManagement() {
+  const [studentDetails, setStudentDetails] = useState({})
   const [activeSection, setActiveSection] = useState('details')
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isIdCardDialogOpen, setIsIdCardDialogOpen] = useState(false)
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
   const [countdown, setCountdown] = useState(5)
-  const facultyId = useParams()['one-on-one-faculty']
+  const studentId = useParams()['student-id']
   const router = useRouter()
   const paths = usePathname().split("/")
   const departmentCode = paths[3]
   const departmentName = paths[4]
 
   useEffect(() => {
-    getFacultyDetailsById()
-  }, [facultyId])
+    getStudentDetailsById()
+  }, [studentId])
 
   useEffect(() => {
     let timer
     if (isSuccessDialogOpen && countdown > 0) {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000)
     } else if (countdown === 0) {
-      router.push(`/departments/${departmentCode}/${departmentName}/faculties`) 
+      router.push(`/students`) 
     }
     return () => clearTimeout(timer)
-  }, [isSuccessDialogOpen, countdown, router])
+  }, [isSuccessDialogOpen, countdown, router, departmentCode, departmentName])
 
-  async function getFacultyDetailsById() {
+  async function getStudentDetailsById() {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/faculty/faculty-by-id/${facultyId}`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/student/get-student/${studentId}`, {
         withCredentials: true
       })
-      setFacultyDetails(response.data)
+      setStudentDetails(response.data)
+      console.log("studentDetails", response.data)
     } catch (error) {
-      console.error("Error fetching faculty details:", error)
-      toast("Error fetching faculty details")
+      console.error("Error fetching student details:", error)
+      toast("Error fetching student details")
     }
   }
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/faculty/delete-faculty/${facultyId}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/student/delete-student/${studentId}`, {
         withCredentials: true
       })
       setIsDeleteDialogOpen(false)
       setIsSuccessDialogOpen(true)
     } catch (error) {
-      toast("Error deleting faculty")
+      toast("Error deleting student")
     }
   }
 
   function RenderRightSection() {
     switch (activeSection) {
       case 'edit':
-        return <EditFaculty facultyDetails={facultyDetails} setFacultyDetails={setFacultyDetails} />
+        return <EditStudent studentDetails={studentDetails} setStudentDetails={setStudentDetails} />
       case 'email':
-        return <SendEmail facultyEmail={facultyDetails.email} />
-      case 'lecture':
-        return <AssignLecture facultyDetails={facultyDetails} />
+        return <EmailSendStudent studentEmail={studentDetails.email} />
+      case 'lectures':
+        // return <StudentLectures studentDetails={studentDetails} />
+        return <h1>Student Lectures</h1>
+      case 'attendance':
+        // return <StudentAttendance studentDetails={studentDetails} />
+        return <h1>Student Attendance</h1>
       default:
         return null
     }
   }
 
   return (
-    <div className=" mx-auto bg-gradient-to-br from-purple-50 to-blue-50">
+    <div className="mx-auto bg-gradient-to-br from-purple-50 to-blue-50">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="lg:sticky ">
+        <div className="lg:sticky">
           <ScrollArea className="h-full">
             <Card className="overflow-hidden shadow-lg rounded-lg">
               <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4">
-                <CardTitle className="text-2xl font-bold">Faculty Details</CardTitle>
+                <CardTitle className="text-2xl font-bold">Student Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 p-4">
-                <FacultyDetails facultyDetails={facultyDetails} />
+                <StudentDetails studentDetails={studentDetails} />
                 <div className="flex flex-wrap gap-3">
                   <Button onClick={() => setActiveSection('edit')} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
                     <Edit className="mr-2 h-5 w-5" /> Edit
@@ -100,11 +106,14 @@ export default function FacultyManagement() {
                   <Button onClick={() => setActiveSection('email')} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
                     <Mail className="mr-2 h-5 w-5" /> Send Email
                   </Button>
-                  <Button onClick={() => setActiveSection('lecture')} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
-                    <BookOpen className="mr-2 h-5 w-5" /> Assign Lecture
+                  <Button onClick={() => setActiveSection('lectures')} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
+                    <BookOpen className="mr-2 h-5 w-5" /> Lectures
                   </Button>
                   <Button onClick={() => setIsIdCardDialogOpen(true)} className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white">
-                    <LiaIdCard className="mr-2 h-5 w-5" /> ID Card
+                    <CreditCard className="mr-2 h-5 w-5" /> ID Card
+                  </Button>
+                  <Button onClick={() => setActiveSection('attendance')} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white">
+                    <ClipboardList className="mr-2 h-5 w-5" /> Attendance
                   </Button>
                   <Button onClick={() => setIsDeleteDialogOpen(true)} variant="destructive" className="flex-1">
                     <Trash2 className="mr-2 h-5 w-5" /> Delete
@@ -118,10 +127,10 @@ export default function FacultyManagement() {
           <Card className="col-span-1 shadow-lg h-full overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg">
               <CardTitle className="text-2xl font-bold">
-                {activeSection === 'edit' ? 'Edit Faculty' : 
+                {activeSection === 'edit' ? 'Edit Student' : 
                  activeSection === 'email' ? 'Send Email' : 
-                 activeSection === 'idcard' ? 'Identity Card':
-                 activeSection === 'lecture' ? 'Assign Lecture' : 'Details'}
+                 activeSection === 'lectures' ? 'Student Lectures' :
+                 activeSection === 'attendance' ? 'Student Attendance' : 'Details'}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 h-[calc(100%-50px)] overflow-y-scroll">
@@ -134,7 +143,7 @@ export default function FacultyManagement() {
                   transition={{ duration: 0.3 }}
                 >
                   {
-                    activeSection==="details" ? 
+                    activeSection === "details" ? 
                         <div className='flex items-center justify-center flex-col gap-2 h-[75vh]'>
                             <TbClick className='text-6xl animate-bounce text-slate-500' />
                             <span className='text-2xl font-bold text-slate-500'>Click on the buttons to perform actions</span>
@@ -152,7 +161,7 @@ export default function FacultyManagement() {
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this faculty member? This action cannot be undone.
+              Are you sure you want to delete this student? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -163,15 +172,15 @@ export default function FacultyManagement() {
       </Dialog>
 
       <Dialog open={isIdCardDialogOpen} onOpenChange={setIsIdCardDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
-            <DialogTitle>Faculty ID Card</DialogTitle>
+            <DialogTitle>Student ID Card</DialogTitle>
             <DialogDescription>
-              Preview and print the faculty ID card.
+              Preview and print the student ID card.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
-            <FacultyIdCard facultyDetails={facultyDetails} />
+            <StudentIdCard studentDetails={studentDetails} />
           </div>
         </DialogContent>
       </Dialog>
@@ -185,7 +194,7 @@ export default function FacultyManagement() {
               </div>
               <DialogTitle>
                 <div className='text-center'>
-                  Faculty Deleted Successfully!
+                  Student Deleted Successfully!
                 </div>
               </DialogTitle>
               <DialogDescription>
