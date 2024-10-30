@@ -1,11 +1,14 @@
 package com.yaduvanshi_brothers.api.service;
 
+import com.yaduvanshi_brothers.api.DTOs.AnnouncementDTO;
 import com.yaduvanshi_brothers.api.DTOs.BranchDTO;
 import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
 import com.yaduvanshi_brothers.api.DTOs.StudentDTO;
+import com.yaduvanshi_brothers.api.entity.AnnouncementEntity;
 import com.yaduvanshi_brothers.api.entity.BranchesEntity;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
 import com.yaduvanshi_brothers.api.entity.StudentEntity;
+import com.yaduvanshi_brothers.api.repository.AnnouncementRepository;
 import com.yaduvanshi_brothers.api.repository.BranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,9 @@ public class BranchService {
 
     @Autowired
     private BranchRepository branchRepository;
+
+    @Autowired
+    private AnnouncementRepository announcementRepository;
 
     public void addBranchService(BranchesEntity branchesEntity) {
         branchRepository.save(branchesEntity);
@@ -68,9 +74,26 @@ public class BranchService {
                 .collect(Collectors.toList());
         dto.setStudents(studentDTOs);
 
+        // Fetch and set announcements for the branch
+        List<AnnouncementDTO> announcementDTOs = announcementRepository.findByBranch(branch).stream()
+                .map(this::convertToAnnouncementDTO)
+                .collect(Collectors.toList());
+        dto.setAnnouncements(announcementDTOs); // Make sure you have this field in BranchDTO
+
         return dto;
     }
 
+    // Add method to convert AnnouncementEntity to AnnouncementDTO
+    private AnnouncementDTO convertToAnnouncementDTO(AnnouncementEntity announcement) {
+        AnnouncementDTO announcementDTO = new AnnouncementDTO();
+        announcementDTO.setAnnouncementId(announcement.getAnnouncementId());
+        announcementDTO.setTitle(announcement.getTitle());
+        announcementDTO.setDescription(announcement.getDescription());
+        announcementDTO.setCreatedAt(announcement.getCreatedAt());
+        announcementDTO.setIsActive(announcement.getIsActive());
+        // Add more fields as necessary
+        return announcementDTO;
+    }
     private FacultyDTO convertToFacultyDTO(FacultyEntity faculty) {
         FacultyDTO facultyDTO = new FacultyDTO();
         facultyDTO.setFacultyId(faculty.getFacultyId());

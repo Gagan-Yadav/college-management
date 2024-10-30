@@ -1,7 +1,9 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.AnnouncementDTO;
 import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
 import com.yaduvanshi_brothers.api.DTOs.LectureDTO;
+import com.yaduvanshi_brothers.api.DTOs.OnlineClassDTO;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
 import com.yaduvanshi_brothers.api.entity.LectureEntity;
 import com.yaduvanshi_brothers.api.entity.StudentEntity;
@@ -72,11 +74,13 @@ public class FacultyController {
                 dto.setImageUrl("default/image/url");
             }
 
+            // Set Lecture IDs
             List<Integer> lectureIds = faculty.getLectures().stream()
                     .map(LectureEntity::getLectureId)
                     .collect(Collectors.toList());
             dto.setLectureIds(lectureIds);
 
+            // Map lectures to LectureDTO
             List<LectureDTO> lectureDTOs = faculty.getLectures().stream().map(lecture -> {
                 LectureDTO lectureDTO = new LectureDTO();
                 lectureDTO.setLectureId(lecture.getLectureId());
@@ -99,6 +103,43 @@ public class FacultyController {
 
             dto.setLectures(lectureDTOs);
 
+            // Map online classes to OnlineClassDTO
+            List<OnlineClassDTO> onlineClassDTOs = faculty.getOnlineClasses().stream().map(onlineClass -> {
+                OnlineClassDTO onlineClassDTO = new OnlineClassDTO();
+                onlineClassDTO.setOnlineLectureId(onlineClass.getOnlineLectureId());
+                onlineClassDTO.setSubject(onlineClass.getSubject());
+                onlineClassDTO.setSemester(onlineClass.getSemester());
+                onlineClassDTO.setPlatforms(onlineClass.getPlatforms());
+                onlineClassDTO.setMeetingLink(onlineClass.getMeetingLink());
+                onlineClassDTO.setStartFrom(onlineClass.getStartFrom());
+                onlineClassDTO.setEnd(onlineClass.getEnd());
+
+                List<Integer> studentIds = onlineClass.getStudents().stream()
+                        .map(StudentEntity::getStudentId)
+                        .collect(Collectors.toList());
+                onlineClassDTO.setStudentIds(studentIds); // Optionally include student IDs
+
+                return onlineClassDTO;
+            }).collect(Collectors.toList());
+
+            dto.setOnlineClasses(onlineClassDTOs); // Set online classes in DTO
+
+            // Fetch and map announcements
+            List<AnnouncementDTO> announcementDTOs = faculty.getAnnouncements().stream().map(announcement -> {
+                AnnouncementDTO announcementDTO = new AnnouncementDTO();
+                announcementDTO.setAnnouncementId(announcement.getAnnouncementId());
+                announcementDTO.setTitle(announcement.getTitle());
+                announcementDTO.setDescription(announcement.getDescription());
+                announcementDTO.setBranchId(announcement.getBranch().getBranchCode());
+                announcementDTO.setAnnouncerId(announcement.getAnnouncer().getFacultyId());
+                announcementDTO.setCreatedAt(announcement.getCreatedAt());
+                announcementDTO.setIsActive(announcement.getIsActive());
+                announcementDTO.setExpirationDate(announcement.getExpirationDate());
+                return announcementDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAnnouncements(announcementDTOs); // Set announcements in DTO
+
             return dto;
         }).collect(Collectors.toList());
     }
@@ -115,6 +156,18 @@ public class FacultyController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving image: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete-faculty/{facultyId}")
+    public ResponseEntity<String> deleteFaculty(@PathVariable Integer facultyId) {
+        try {
+            facultyService.deleteFacultyService(facultyId);
+            return ResponseEntity.ok("Faculty deleted successfully");
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting faculty: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting faculty: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping("/faculty-by-id/{id}")
     public ResponseEntity<FacultyDTO> getFacultyById(@PathVariable int id) {
@@ -161,27 +214,27 @@ public class FacultyController {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @PostMapping("/update-student-by-id/{id}")
-    public ResponseEntity<String> updateStudentById(@PathVariable int id, @RequestBody StudentEntity student){
-        Optional<StudentEntity> studentInDb = studentService.getStudentByIdService(id);
-        if (studentInDb.isPresent()) {
-            StudentEntity existingStudent = studentInDb.get();
-            existingStudent.setRollNo(student.getRollNo());
-            existingStudent.setStudentName(student.getStudentName());
-            existingStudent.setEmail(student.getEmail());
-            existingStudent.setMobile(student.getMobile());
-            existingStudent.setAge(student.getAge());
-            existingStudent.setAddress(student.getAddress());
-            existingStudent.setYear(student.getYear());
-            existingStudent.setSemester(student.getSemester());
-            existingStudent.setBranch(student.getBranch());
-
-            studentService.updateStudentById(existingStudent);
-            return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
-        }
-    }
+//    @PostMapping("/update-student-by-id/{id}")
+//    public ResponseEntity<String> updateStudentById(@PathVariable int id, @RequestBody StudentEntity student){
+//        Optional<StudentEntity> studentInDb = studentService.getStudentByIdService(id);
+//        if (studentInDb.isPresent()) {
+//            StudentEntity existingStudent = studentInDb.get();
+//            existingStudent.setRollNo(student.getRollNo());
+//            existingStudent.setStudentName(student.getStudentName());
+//            existingStudent.setEmail(student.getEmail());
+//            existingStudent.setMobile(student.getMobile());
+//            existingStudent.setAge(student.getAge());
+//            existingStudent.setAddress(student.getAddress());
+//            existingStudent.setYear(student.getYear());
+//            existingStudent.setSemester(student.getSemester());
+//            existingStudent.setBranch(student.getBranch());
+//
+//            studentService.updateStudentById(existingStudent);
+//            return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
+//        }
+//    }
 
     @PostMapping("/create-lecture")
     public ResponseEntity<?> createLecture(@RequestBody LectureEntity lecture) {

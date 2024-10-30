@@ -210,15 +210,15 @@ public class AdminController {
         return new ResponseEntity<>("User not exist", HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/delete-student-by-id/{id}")
-    public ResponseEntity<String> deleteStudentByIdController(@PathVariable int id){
-        Optional<StudentEntity> student = studentService.getStudentByIdService(id);
-        if (student.isPresent()) {
-            studentService.deleteStudentById(id);
-            return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
-    }
+//    @DeleteMapping("/delete-student-by-id/{id}")
+//    public ResponseEntity<String> deleteStudentByIdController(@PathVariable int id){
+//        Optional<StudentEntity> student = studentService.getStudentByIdService(id);
+//        if (student.isPresent()) {
+//            studentService.deleteStudentById(id);
+//            return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
+//    }
 
     @PostMapping("/add-new-student")
     public ResponseEntity<String> addStudentController(@RequestBody StudentEntity student){
@@ -232,27 +232,27 @@ public class AdminController {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @PatchMapping("/update-student-by-id/{id}")
-    public ResponseEntity<String> updateStudentById(@PathVariable int id, @RequestBody StudentEntity student){
-        Optional<StudentEntity> studentInDb = studentService.getStudentByIdService(id);
-        if (studentInDb.isPresent()) {
-            StudentEntity existingStudent = studentInDb.get();
-            existingStudent.setRollNo(student.getRollNo());
-            existingStudent.setStudentName(student.getStudentName());
-            existingStudent.setEmail(student.getEmail());
-            existingStudent.setMobile(student.getMobile());
-            existingStudent.setAge(student.getAge());
-            existingStudent.setAddress(student.getAddress());
-            existingStudent.setYear(student.getYear());
-            existingStudent.setSemester(student.getSemester());
-            existingStudent.setBranch(student.getBranch());
-
-            studentService.updateStudentById(existingStudent);
-            return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
-        }
-    }
+//    @PatchMapping("/update-student-by-id/{id}")
+//    public ResponseEntity<String> updateStudentById(@PathVariable int id, @RequestBody StudentEntity student){
+//        Optional<StudentEntity> studentInDb = studentService.getStudentByIdService(id);
+//        if (studentInDb.isPresent()) {
+//            StudentEntity existingStudent = studentInDb.get();
+//            existingStudent.setRollNo(student.getRollNo());
+//            existingStudent.setStudentName(student.getStudentName());
+//            existingStudent.setEmail(student.getEmail());
+//            existingStudent.setMobile(student.getMobile());
+//            existingStudent.setAge(student.getAge());
+//            existingStudent.setAddress(student.getAddress());
+//            existingStudent.setYear(student.getYear());
+//            existingStudent.setSemester(student.getSemester());
+//            existingStudent.setBranch(student.getBranch());
+//
+//            studentService.updateStudentById(existingStudent);
+//            return new ResponseEntity<>("Student details updated successfully", HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>("Student not found", HttpStatus.NOT_FOUND);
+//        }
+//    }
 
     @PostMapping
     public ResponseEntity<?> createLecture(@RequestBody LectureEntity lecture) {

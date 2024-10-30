@@ -56,4 +56,10 @@ public class FacultyEntity {
     @JoinColumn(name = "image_id")
     private ImageEntity imageEntity;
 
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    private List<OnlineClassEntity> onlineClasses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "announcer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AnnouncementEntity> announcements = new ArrayList<>();
+
 }

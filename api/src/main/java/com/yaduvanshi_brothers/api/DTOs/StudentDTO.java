@@ -22,4 +22,5 @@ public class StudentDTO {
     private int semester;
     private String branchCode;
     private List<LectureDTO> lectures;
+    private List<OnlineClassDTO> onlineClasses;
 }

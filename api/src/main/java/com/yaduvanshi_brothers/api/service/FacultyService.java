@@ -7,6 +7,7 @@ import com.yaduvanshi_brothers.api.repository.BranchRepository;
 import com.yaduvanshi_brothers.api.repository.FacultyRepository;
 import com.yaduvanshi_brothers.api.repository.ImageRepository;
 import com.yaduvanshi_brothers.api.utils.UploadImageUtil;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,9 @@ public class FacultyService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private LectureService lectureService;
 
 
     public void addFacultyService(FacultyEntity facultyEntity, MultipartFile image) throws IOException {
@@ -61,6 +65,36 @@ public class FacultyService {
     public List<FacultyEntity> allFacultyService1() {
         return facultyRepository.findAll();
     }
+
+    public void deleteFacultyService(Integer facultyId) {
+        Optional<FacultyEntity> facultyOpt = facultyRepository.findById(facultyId);
+
+        if (facultyOpt.isPresent()) {
+            FacultyEntity faculty = facultyOpt.get();
+
+            // Remove faculty from branch
+            if (faculty.getBranch() != null) {
+                BranchesEntity branch = faculty.getBranch();
+                branch.getFaculties().remove(faculty);  // Remove faculty reference from branch
+                branchRepository.save(branch);
+            }
+
+            // Remove faculty from lectures
+            List<LectureEntity> lectures = faculty.getLectures();
+            if (lectures != null) {
+                for (LectureEntity lecture : lectures) {
+                    lecture.setFaculty(null);  // Clear the faculty reference in each lecture
+                    lectureService.createLecture(lecture);  // Save the updated lecture without the faculty
+                }
+            }
+
+            // Delete the faculty
+            facultyRepository.delete(faculty);
+        } else {
+            throw new EntityNotFoundException("Faculty with id " + facultyId + " not found.");
+        }
+    }
+
 
 
     public List<FacultyDTO> allFacultyService() {
@@ -178,11 +212,6 @@ public class FacultyService {
     }
 
 
-
-
-    public void deleteFacultyService(Integer id) {
-        facultyRepository.deleteById(id);
-    }
 
     private FacultyDTO convertToDTO(FacultyEntity faculty) {
         FacultyDTO dto = new FacultyDTO();

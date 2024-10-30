@@ -52,4 +52,8 @@ public class StudentEntity {
     @JsonIgnore
     private List<LectureEntity> lectures = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "students")
+    @JsonIgnore
+    private List<OnlineClassEntity> onlineClasses = new ArrayList<>();
+
 }

@@ -18,4 +18,5 @@ public class BranchDTO {
     private List<String> subjects;
     private List<FacultyDTO> faculties;
     private List<StudentDTO> students;
+    private List<AnnouncementDTO> announcements;
 }

@@ -24,5 +24,7 @@ public class FacultyDTO {
     private String branchCode;
     private List<Integer> lectureIds;
     private List<LectureDTO> lectures;
+    private List<OnlineClassDTO> onlineClasses;
+    private List<AnnouncementDTO> announcements;
     private String imageUrl;
 }
