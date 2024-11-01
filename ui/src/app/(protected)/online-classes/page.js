@@ -14,9 +14,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from 'next/link'
 import { Card, CardContent } from "@/components/ui/card"
 
-export default function LectureManagement() {
-    const [lectures, setLectures] = useState([])
-    const [filteredLectures, setFilteredLectures] = useState([])
+export default function OnlineClassesManagement() {
+    const [onlineClasses, setOnlineClasses] = useState([])
+    const [filteredClasses, setFilteredClasses] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedSemester, setSelectedSemester] = useState('')
@@ -26,24 +26,24 @@ export default function LectureManagement() {
     const [activeTab, setActiveTab] = useState('all')
     const [appliedFilters, setAppliedFilters] = useState(0)
 
-    const lecturesPerPage = 10
+    const classesPerPage = 10
 
     useEffect(() => {
-        fetchLectures()
+        fetchOnlineClasses()
     }, [])
 
-    const fetchLectures = async () => {
+    const fetchOnlineClasses = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/lectures/get-all-lectures`, { withCredentials: true })
-            const lecturesWithFaculty = await Promise.all(response.data.map(async (lecture) => {
-                const facultyResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/faculty/faculty-by-id/${lecture.facultyId}`, { withCredentials: true })
-                return { ...lecture, faculty: facultyResponse.data }
+            const response = await axios.get('http://localhost:8080/online-classes/get-all-online-classes', { withCredentials: true })
+            const classesWithFaculty = await Promise.all(response.data.map(async (onlineClass) => {
+                const facultyResponse = await axios.get(`http://localhost:8080/faculty/faculty-by-id/${onlineClass.facultyId}`, { withCredentials: true })
+                return { ...onlineClass, faculty: facultyResponse.data }
             }))
-            const sortedLectures = lecturesWithFaculty.sort((a, b) => new Date(b.startFrom) - new Date(a.startFrom))
-            setLectures(sortedLectures)
-            setFilteredLectures(sortedLectures)
+            const sortedClasses = classesWithFaculty.sort((a, b) => new Date(b.startFrom) - new Date(a.startFrom))
+            setOnlineClasses(sortedClasses)
+            setFilteredClasses(sortedClasses)
         } catch (error) {
-            console.error('Error fetching lectures:', error)
+            console.error('Error fetching online classes:', error)
         }
     }
 
@@ -56,32 +56,32 @@ export default function LectureManagement() {
             .slice(0, 2)
     }
 
-    const filterLectures = () => {
+    const filterClasses = () => {
         const now = new Date()
-        let filtered = lectures.filter(lecture =>
-            lecture.subject.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (selectedSemester === '' || lecture.semester.toString() === selectedSemester) &&
-            (startDate === '' || new Date(lecture.startFrom) >= new Date(startDate)) &&
-            (endDate === '' || new Date(lecture.till) <= new Date(endDate)) &&
-            (facultyName === '' || lecture.faculty.name.toLowerCase().includes(facultyName.toLowerCase()))
+        let filtered = onlineClasses.filter(onlineClass =>
+            onlineClass.subject.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (selectedSemester === '' || onlineClass.semester.toString() === selectedSemester) &&
+            (startDate === '' || new Date(onlineClass.startFrom) >= new Date(startDate)) &&
+            (endDate === '' || new Date(onlineClass.end) <= new Date(endDate)) &&
+            (facultyName === '' || onlineClass.faculty.name.toLowerCase().includes(facultyName.toLowerCase()))
         )
 
         if (activeTab === 'past') {
-            filtered = filtered.filter(lecture => new Date(lecture.till) < now)
+            filtered = filtered.filter(onlineClass => new Date(onlineClass.end) < now)
         } else if (activeTab === 'present') {
-            filtered = filtered.filter(lecture =>
-                new Date(lecture.startFrom) <= now && new Date(lecture.till) >= now
+            filtered = filtered.filter(onlineClass =>
+                new Date(onlineClass.startFrom) <= now && new Date(onlineClass.end) >= now
             )
         } else if (activeTab === 'future') {
-            filtered = filtered.filter(lecture => new Date(lecture.startFrom) > now)
+            filtered = filtered.filter(onlineClass => new Date(onlineClass.startFrom) > now)
         }
 
         return filtered
     }
 
     useEffect(() => {
-        const filtered = filterLectures()
-        setFilteredLectures(filtered)
+        const filtered = filterClasses()
+        setFilteredClasses(filtered)
         setCurrentPage(1)
 
         let filterCount = 0
@@ -92,7 +92,7 @@ export default function LectureManagement() {
         if (facultyName) filterCount++
         if (activeTab !== 'all') filterCount++
         setAppliedFilters(filterCount)
-    }, [searchTerm, selectedSemester, startDate, endDate, facultyName, activeTab, lectures])
+    }, [searchTerm, selectedSemester, startDate, endDate, facultyName, activeTab, onlineClasses])
 
     const clearFilters = () => {
         setSearchTerm('')
@@ -103,17 +103,17 @@ export default function LectureManagement() {
         setActiveTab('all')
     }
 
-    const indexOfLastLecture = currentPage * lecturesPerPage
-    const indexOfFirstLecture = indexOfLastLecture - lecturesPerPage
-    const currentLectures = filteredLectures.slice(indexOfFirstLecture, indexOfLastLecture)
-    const totalPages = Math.ceil(filteredLectures.length / lecturesPerPage)
+    const indexOfLastClass = currentPage * classesPerPage
+    const indexOfFirstClass = indexOfLastClass - classesPerPage
+    const currentClasses = filteredClasses.slice(indexOfFirstClass, indexOfLastClass)
+    const totalPages = Math.ceil(filteredClasses.length / classesPerPage)
 
     const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         return (
             <div className='flex items-center justify-between bg-white p-2  rounded-sm'>
                 <div>
                     <p className="text-sm text-muted-foreground">
-                        Showing {currentLectures.length} of {filteredLectures.length} lecture{filteredLectures.length !== 1 ? 's' : ''}
+                        Showing {currentClasses.length} of {filteredClasses.length} class{filteredClasses.length !== 1 ? 'es' : ''}
                     </p>
                 </div>
                 <div className="flex items-center justify-center space-x-2">
@@ -157,10 +157,23 @@ export default function LectureManagement() {
         )
     }
 
+    const getPlatformBadge = (platform) => {
+        switch (platform) {
+            case 'ZOOM':
+                return <Badge variant="secondary" className="bg-blue-100 text-blue-800">Zoom</Badge>
+            case 'MEET':
+                return <Badge variant="secondary" className="bg-green-100 text-green-800">Google Meet</Badge>
+            case 'MICROSOFT MEET':
+                return <Badge variant="secondary" className="bg-purple-100 text-purple-800">Microsoft Teams</Badge>
+            default:
+                return <Badge variant="secondary">Online</Badge>
+        }
+    }
+
     return (
         <div className="z-10">
             <div className="bg-gradient-to-br from-purple-500 to-blue-600 text-white p-2 rounded-sm mb-4 ">
-                <h1 className="text-xl font-bold">Lecture Management</h1>
+                <h1 className="text-xl font-bold">Online Classes Management</h1>
             </div>
 
             <div className="space-y-4 h-[600px]">
@@ -234,9 +247,9 @@ export default function LectureManagement() {
                         </div>
                     </Card>
                     <Card className="shadow-none border-none">
-                        <Link href="/create-lecture" passHref>
+                        <Link href="/create-online-class" passHref>
                             <Button className="w-full text-sm" variant="outline">
-                                <Plus className="w-4 h-4" /> Schedule Lecture
+                                <Plus className="w-4 h-4" /> Schedule Online Class
                             </Button>
                         </Link>
                     </Card>
@@ -244,16 +257,16 @@ export default function LectureManagement() {
 
                 <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
                    <TabsList className="grid w-full grid-cols-4 mb-4">
-                        <TabsTrigger value="all" className={`${activeTab === 'all' ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white' : ''}`}>All Lectures</TabsTrigger>
+                        <TabsTrigger value="all" className={`${activeTab === 'all' ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white' : ''}`}>All Classes</TabsTrigger>
                         <TabsTrigger value="past" className={`${activeTab === 'past' ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white' : ''}`}>Past</TabsTrigger>
                         <TabsTrigger value="present" className={`${activeTab === 'present' ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white' : ''}`}>Present</TabsTrigger>
                         <TabsTrigger value="future" className={`${activeTab === 'future' ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white' : ''}`}>Future</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value={activeTab} className="space-y-4 h-[450px] overflow-y-scroll">
-                        {currentLectures.map((lecture) => (
+                        {currentClasses.map((onlineClass) => (
                             <motion.div
-                                key={lecture.id}
+                                key={onlineClass.onlineLectureId}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3 }}
@@ -261,32 +274,32 @@ export default function LectureManagement() {
                             >
                                 <div className="flex items-center gap-4 flex-grow">
                                     <Avatar className="h-10 w-10">
-                                        <AvatarImage src={lecture.faculty.imageUrl} alt={lecture.faculty.name} />
-                                        <AvatarFallback>{getInitials(lecture.faculty.name)}</AvatarFallback>
+                                        <AvatarImage src={onlineClass.faculty.imageUrl} alt={onlineClass.faculty.name} />
+                                        <AvatarFallback>{getInitials(onlineClass.faculty.name)}</AvatarFallback>
                                     </Avatar>
 
                                     <div className="flex-grow">
-                                        <h2 className="text-md font-semibold">{lecture.subject}</h2>
+                                        <h2 className="text-md font-semibold">{onlineClass.subject}</h2>
                                         <div className="flex items-center gap-4 text-sm text-gray-500">
                                             <div className="flex items-center gap-1">
                                                 <Calendar className="w-4 h-4" />
-                                                {format(new Date(lecture.startFrom), 'dd MMM, yyyy, h:mm a')}
+                                                {format(new Date(onlineClass.startFrom), 'dd MMM, yyyy, h:mm a')}
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <Tag className="w-4 h-4" />
-                                                 by {lecture.faculty.name}
+                                                 by {onlineClass.faculty.name}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        {/* <Badge variant="secondary" className="hidden sm:inline-flex">
-                                            {lecture.department}
-                                        </Badge> */}
-                                        <Badge variant="" className="hidden sm:inline-flex">
-                                            Offline Class
-                                        </Badge>
-                                        <Link href={`/lecture/${lecture.lectureId}`} passHref>
+                                        {getPlatformBadge(onlineClass.platforms)}
+                                        <Link href={`${onlineClass.meetingLink}`} passHref target="_blank">
+                                            <Button className="bg-gradient-to-br from-purple-500 to-blue-600 text-xs">
+                                                Join Class
+                                            </Button>
+                                        </Link>
+                                        <Link href={`/online-class/${onlineClass.onlineLectureId}`} passHref>
                                             <Button className="bg-gradient-to-br from-purple-500 to-blue-600 text-xs">
                                                 View Details
                                             </Button>
@@ -306,4 +319,19 @@ export default function LectureManagement() {
             />
         </div>
     )
+
 }
+
+// const downloadFile = async () => {
+//     const response = await fetch("http://localhost:8080/download-file/1");
+//     const blob = await response.blob();
+//     const url = window.URL.createObjectURL(blob);
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = "your_filename.pdf"; // Set the desired filename here
+//     document.body.appendChild(a);
+//     a.click();
+//     a.remove();
+//   };
+//   downloadFile();
+  
