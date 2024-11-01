@@ -19,6 +19,7 @@ import StudentIdCard from '@/components/StudentIdCard'
 import { usePathname } from 'next/navigation'
 import EditStudent from '@/components/EditStudent'
 
+
 export default function StudentManagement() {
   const [studentDetails, setStudentDetails] = useState({})
   const [activeSection, setActiveSection] = useState('details')
@@ -77,9 +78,6 @@ export default function StudentManagement() {
         return <EditStudent studentDetails={studentDetails} setStudentDetails={setStudentDetails} />
       case 'email':
         return <EmailSendStudent studentEmail={studentDetails.email} />
-      case 'lectures':
-        // return <StudentLectures studentDetails={studentDetails} />
-        return <h1>Student Lectures</h1>
       case 'attendance':
         // return <StudentAttendance studentDetails={studentDetails} />
         return <h1>Student Attendance</h1>
@@ -106,7 +104,7 @@ export default function StudentManagement() {
                   <Button onClick={() => setActiveSection('email')} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
                     <Mail className="mr-2 h-5 w-5" /> Send Email
                   </Button>
-                  <Button onClick={() => setActiveSection('lectures')} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button onClick={() => router.push(`/students/${studentDetails.studentName}/${studentDetails.studentId}/student-lectures`)} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
                     <BookOpen className="mr-2 h-5 w-5" /> Lectures
                   </Button>
                   <Button onClick={() => setIsIdCardDialogOpen(true)} className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white">
@@ -128,8 +126,7 @@ export default function StudentManagement() {
             <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-t-lg">
               <CardTitle className="text-2xl font-bold">
                 {activeSection === 'edit' ? 'Edit Student' : 
-                 activeSection === 'email' ? 'Send Email' : 
-                 activeSection === 'lectures' ? 'Student Lectures' :
+                 activeSection === 'email' ? 'Send Email' :
                  activeSection === 'attendance' ? 'Student Attendance' : 'Details'}
               </CardTitle>
             </CardHeader>
