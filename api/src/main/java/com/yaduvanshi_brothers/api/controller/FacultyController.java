@@ -1,9 +1,6 @@
 package com.yaduvanshi_brothers.api.controller;
 
-import com.yaduvanshi_brothers.api.DTOs.AnnouncementDTO;
-import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
-import com.yaduvanshi_brothers.api.DTOs.LectureDTO;
-import com.yaduvanshi_brothers.api.DTOs.OnlineClassDTO;
+import com.yaduvanshi_brothers.api.DTOs.*;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
 import com.yaduvanshi_brothers.api.entity.LectureEntity;
 import com.yaduvanshi_brothers.api.entity.StudentEntity;
@@ -139,6 +136,23 @@ public class FacultyController {
             }).collect(Collectors.toList());
 
             dto.setAnnouncements(announcementDTOs); // Set announcements in DTO
+
+            // Map assignments to AssignmentDTO
+            List<AssignmentDTO> assignmentDTOs = faculty.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                // Add any other fields you want to include in AssignmentDTO
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs); // Set assignments in DTO
 
             return dto;
         }).collect(Collectors.toList());

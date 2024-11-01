@@ -27,4 +27,5 @@ public class FacultyDTO {
     private List<OnlineClassDTO> onlineClasses;
     private List<AnnouncementDTO> announcements;
     private String imageUrl;
+    private List<AssignmentDTO> assignments;
 }

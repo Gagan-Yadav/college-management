@@ -1,5 +1,6 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.AssignmentDTO;
 import com.yaduvanshi_brothers.api.DTOs.LectureDTO;
 import com.yaduvanshi_brothers.api.DTOs.OnlineClassDTO;
 import com.yaduvanshi_brothers.api.DTOs.StudentDTO;
@@ -88,6 +89,27 @@ public class StudentController {
 
             dto.setOnlineClasses(onlineClassDTOs); // Assuming you have a corresponding setter in StudentDTO
 
+            List<AssignmentDTO> assignmentDTOs = student.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setQuestions(assignment.getQuestions());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setCategory(assignment.getCategory());
+                assignmentDTO.setStatus(assignment.getStatus());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                assignmentDTO.setDifficultyLevel(assignment.getDifficultyLevel());
+                assignmentDTO.setNotes(assignment.getNotes());
+
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs);
+
             return dto;
         }).collect(Collectors.toList());
 
@@ -117,6 +139,27 @@ public class StudentController {
                 dto.setBranchCode(branch.getBranchCode());
             }
 
+            List<LectureDTO> lectureDTOs = student.getLectures().stream().map(lecture -> {
+                LectureDTO lectureDTO = new LectureDTO();
+                lectureDTO.setLectureId(lecture.getLectureId());
+                lectureDTO.setYear(lecture.getYear());
+                lectureDTO.setSemester(lecture.getSemester());
+                lectureDTO.setDepartment(lecture.getDepartment());
+                lectureDTO.setSubject(lecture.getSubject());
+                lectureDTO.setStartFrom(lecture.getStartFrom());
+                lectureDTO.setTill(lecture.getTill());
+                lectureDTO.setRoomNumber(lecture.getRoomNumber());
+
+                FacultyEntity faculty = lecture.getFaculty();
+                if (faculty != null) {
+                    lectureDTO.setFacultyId(faculty.getFacultyId());
+                }
+
+                return lectureDTO;
+            }).collect(Collectors.toList());
+
+            dto.setLectures(lectureDTOs);
+
             // Fetching online classes
             List<OnlineClassDTO> onlineClassDTOs = student.getOnlineClasses().stream().map(onlineClass -> {
                 OnlineClassDTO onlineClassDTO = new OnlineClassDTO();
@@ -138,6 +181,27 @@ public class StudentController {
             }).collect(Collectors.toList());
 
             dto.setOnlineClasses(onlineClassDTOs); // Set the online classes in the DTO
+
+            List<AssignmentDTO> assignmentDTOs = student.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setQuestions(assignment.getQuestions());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setCategory(assignment.getCategory());
+                assignmentDTO.setStatus(assignment.getStatus());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                assignmentDTO.setDifficultyLevel(assignment.getDifficultyLevel());
+                assignmentDTO.setNotes(assignment.getNotes());
+
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs);
 
             return ResponseEntity.ok(dto);
         } else {

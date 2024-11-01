@@ -1,9 +1,10 @@
 package com.yaduvanshi_brothers.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -14,77 +15,62 @@ public class AssignmentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private Integer year;
     private Integer semester;
 
-    @Column(name = "branch_code", nullable = false, insertable = false, updatable = false)
-    private String branchCode;
-
     @ManyToOne
     @JoinColumn(name = "branch_code")
-    private BranchesEntity branch;
+    private BranchesEntity branchCode;
 
     private String subject;
 
     @ManyToOne
     @JoinColumn(name = "assigned_by")
-    private FacultyEntity assignedBy;  // Refers to faculty who assigned the work
+    @JsonIgnore
+    private FacultyEntity assignedBy;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     @ElementCollection
     @Column(name = "questions")
     private List<String> questions;
 
-    @ManyToMany
-    @JoinTable(
-            name = "assignment_student",
-            joinColumns = @JoinColumn(name = "assignment_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private List<StudentEntity> students;  // Students assigned to the assignment
+    @ManyToMany(mappedBy = "assignments")
+    private List<StudentEntity> students;
 
-    @Column(name = "assignment_type")
     private String assignmentType;
-
-    @Column(name = "category")
     private String category;
-
-    @Column(name = "status", nullable = false)
     private String status = "Pending";
-
-    @Column(name = "total_marks")
     private Integer totalMarks;
-
-    @Column(name = "difficulty_level")
     private String difficultyLevel;
-
-    @Column(name = "notes")
     private String notes;
 
+    @Column(columnDefinition = "LONGBLOB")
     @Lob
-    @Column(name = "attached_files")
-    private byte[] attachedFiles;  // Stores attached files as byte data
+    private byte[] attachedFiles;
+
+    @Column(name = "file_name")
+    private String fileName;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -1,5 +1,6 @@
 package com.yaduvanshi_brothers.api.service;
 
+import com.yaduvanshi_brothers.api.DTOs.AssignmentDTO;
 import com.yaduvanshi_brothers.api.DTOs.FacultyDTO;
 import com.yaduvanshi_brothers.api.DTOs.LectureDTO;
 import com.yaduvanshi_brothers.api.entity.*;
@@ -133,7 +134,7 @@ public class FacultyService {
                     .collect(Collectors.toList());
             dto.setLectureIds(lectureIds);
 
-            // Convert lectures to LectureDTOs if needed
+            // Convert lectures to LectureDTOs
             List<LectureDTO> lectureDTOs = entity.getLectures().stream().map(lecture -> {
                 LectureDTO lectureDTO = new LectureDTO();
                 lectureDTO.setLectureId(lecture.getLectureId());
@@ -156,10 +157,36 @@ public class FacultyService {
 
             dto.setLectures(lectureDTOs);
 
+            // Get assignment details
+            List<AssignmentDTO> assignmentDTOs = entity.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setBranchCode(assignment.getBranchCode().getBranchCode());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setQuestions(assignment.getQuestions());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setCategory(assignment.getCategory());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                assignmentDTO.setDifficultyLevel(assignment.getDifficultyLevel());
+                assignmentDTO.setNotes(assignment.getNotes());
+//                assignmentDTO.setFileName(assignment.getFileName());
+//                assignmentDTO.setCreatedAt(assignment.getCreatedAt());
+//                assignmentDTO.setUpdatedAt(assignment.getUpdatedAt());
+
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs); // Set assignments in DTO
+
             return Optional.of(dto);
         }
         return Optional.empty();
     }
+
 
     public void updateFacultyService(Integer id, FacultyEntity facultyEntity, MultipartFile image) throws IOException {
         System.out.println("Now we are in faculty update service...");

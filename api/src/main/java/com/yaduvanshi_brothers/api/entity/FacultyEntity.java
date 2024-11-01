@@ -62,4 +62,8 @@ public class FacultyEntity {
     @OneToMany(mappedBy = "announcer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AnnouncementEntity> announcements = new ArrayList<>();
 
+    @OneToMany(mappedBy = "assignedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AssignmentEntity> assignments = new ArrayList<>();
+
+
 }
