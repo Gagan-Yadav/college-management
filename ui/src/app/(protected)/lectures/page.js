@@ -160,7 +160,7 @@ export default function LectureManagement() {
     return (
         <div className="z-10">
             <div className="bg-gradient-to-br from-purple-500 to-blue-600 text-white p-2 rounded-sm mb-4 ">
-                <h1 className="text-xl font-bold">Lecture Management</h1>
+                <h1 className="text-xl font-bold">Organize. Manage. Succeed: The Future of Lecture Management!</h1>
             </div>
 
             <div className="space-y-4 h-[600px]">
@@ -286,7 +286,7 @@ export default function LectureManagement() {
                                         <Badge variant="" className="hidden sm:inline-flex">
                                             Offline Class
                                         </Badge>
-                                        <Link href={`/lecture/${lecture.lectureId}`} passHref>
+                                        <Link href={`/lectures/${lecture.lectureId}`} passHref>
                                             <Button className="bg-gradient-to-br from-purple-500 to-blue-600 text-xs">
                                                 View Details
                                             </Button>

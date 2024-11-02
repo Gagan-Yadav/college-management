@@ -299,7 +299,7 @@ export default function OnlineClassesManagement() {
                                                 Join Class
                                             </Button>
                                         </Link>
-                                        <Link href={`/online-class/${onlineClass.onlineLectureId}`} passHref>
+                                        <Link href={`/online-classes/${onlineClass.onlineLectureId}`} passHref>
                                             <Button className="bg-gradient-to-br from-purple-500 to-blue-600 text-xs">
                                                 View Details
                                             </Button>
@@ -322,16 +322,5 @@ export default function OnlineClassesManagement() {
 
 }
 
-// const downloadFile = async () => {
-//     const response = await fetch("http://localhost:8080/download-file/1");
-//     const blob = await response.blob();
-//     const url = window.URL.createObjectURL(blob);
-//     const a = document.createElement("a");
-//     a.href = url;
-//     a.download = "your_filename.pdf"; // Set the desired filename here
-//     document.body.appendChild(a);
-//     a.click();
-//     a.remove();
-//   };
-//   downloadFile();
+
   

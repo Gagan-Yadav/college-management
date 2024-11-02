@@ -9,9 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, Clock, User, Briefcase, Mail, Phone, GraduationCap, MapPin, HelpCircle } from 'lucide-react'
+import { Calendar, Clock, User, Briefcase, Mail, Phone, GraduationCap, MapPin, HelpCircle, Video } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -27,18 +28,18 @@ const stagger = {
   }
 }
 
-export default function LectureDetails() {
+export default function OnlineClassDetails() {
   const router = useRouter()
   const [lecture, setLecture] = useState(null)
   const [faculty, setFaculty] = useState(null)
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
-  const lectureId  = useParams()["lecture-id"]
+  const lectureId  = useParams()["class-details-id"]
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const lectureResponse = await axios.get(`http://localhost:8080/lectures/${lectureId}`, { withCredentials: true })
+        const lectureResponse = await axios.get(`http://localhost:8080/online-classes/get-online-class-by-id/${lectureId}`, { withCredentials: true })
         setLecture(lectureResponse.data)
 
         const facultyResponse = await axios.get(`http://localhost:8080/faculty/faculty-by-id/${lectureResponse.data.facultyId}`, { withCredentials: true })
@@ -86,11 +87,11 @@ export default function LectureDetails() {
       <Card className="overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 shadow-lg rounded-md h-full">
         <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
           <motion.div variants={fadeInUp}>
-            <CardTitle className="text-xl font-bold mb-2">{lecture.subject}</CardTitle>
+            <CardTitle className="text-xl font-bold mb-2">⭐ {lecture.topic || "No Topic"}</CardTitle>
             <div className="flex items-center mt-2 text-blue-100">
               <Calendar className="w-5 h-5 mr-2" />
               <span>
-                {format(new Date(lecture.startFrom), 'PPP')} | {format(new Date(lecture.startFrom), 'p')} - {format(new Date(lecture.till), 'p')}
+                {format(new Date(lecture.startFrom), 'PPP')} | {format(new Date(lecture.startFrom), 'p')} - {format(new Date(lecture.end), 'p')}
               </span>
             </div>
           </motion.div>
@@ -101,12 +102,12 @@ export default function LectureDetails() {
               <h3 className="text-xl font-semibold mb-4 text-blue-700">Lecture Details</h3>
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300">Year {lecture.year}</Badge>
+                  <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300">{lecture.platforms}</Badge>
                   <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-300">Semester {lecture.semester}</Badge>
-                  <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300">{lecture.department}</Badge>
+                  <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300">{lecture.branchCode}</Badge>
                 </div>
-                <p className="flex items-center"><Clock className="w-4 h-4 mr-2 text-blue-600" /> Duration: {format(new Date(lecture.startFrom), 'p')} - {format(new Date(lecture.till), 'p')}</p>
-                <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-blue-600" /> Room Number: {lecture.roomNumber}</p>
+                <p className="flex items-center"><Clock className="w-4 h-4 mr-2 text-blue-600" /> Duration: {format(new Date(lecture.startFrom), 'p')} - {format(new Date(lecture.end), 'p')}</p>
+                <p className="flex items-center"><MapPin className="w-4 h-4 mr-2 text-blue-600" />platforms: {lecture.subject}</p>
               </div>
             </motion.div>
             <motion.div variants={fadeInUp}>
@@ -169,6 +170,19 @@ export default function LectureDetails() {
         
                 <HelpCircle className="w-4 h-4 mr-2" />
                 Get Help
+             
+            </Button>
+
+            <Button 
+            asChild
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              
+            >
+        
+                <Link href={`${lecture.meetingLink}`} passHref target="_blank">
+                  <Video className="w-4 h-4 mr-2" />
+                    Join Class
+                </Link>
              
             </Button>
 
