@@ -7,7 +7,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 @Service
-public class uploadImageUtil {
+public class UploadImageUtil {
 
     public static byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();

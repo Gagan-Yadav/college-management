@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,10 +27,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Briefcase, Phone, Mail, DollarSign, Users, Building, BookOpen } from 'lucide-react'
+import { User, Briefcase, Phone, Mail, DollarSign, Users, Building, BookOpen, ArrowRight } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { toast } from "react-hot-toast"
 import { useRouter, usePathname } from 'next/navigation'
+import { MdOutlineQueuePlayNext } from 'react-icons/md'
+import { IoMdAddCircle } from 'react-icons/io'
+import axios from 'axios'
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -51,7 +54,7 @@ export default function AddFacultyPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
   const [activeTab, setActiveTab] = useState("personal")
-  const pathname = usePathname()  
+  const pathname = usePathname()
   const paths = pathname.split("/").splice(1)
   const departmentCode = paths[1]
   const departmentName = paths[2]
@@ -66,20 +69,45 @@ export default function AddFacultyPage() {
       designation: "",
       gender: "Male",
       departmentType: "",
-      subDepartment: "",
-      branchCode: "",
+      subDepartment: departmentName.replace(/%20/g, " "),
+      branchCode: departmentCode
     },
   })
 
-  function onSubmit(values) {
+  useEffect(() => {
+    form.setValue('subDepartment', departmentName.replace(/%20/g, " "))
+    form.setValue('branchCode', departmentCode)
+  }, [departmentName, departmentCode, form])
+
+  async function onSubmit(values) {
+    console.log(values)
     try {
-      // Simulating an API call
-      console.log(values)
+      const formData = new FormData()
+      formData.append('name', values.name)
+      formData.append('email', values.email)
+      formData.append('mobile', values.mobile)
+      formData.append('salary', values.salary.toString())
+      formData.append('designation', values.designation)
+      formData.append('departmentType', values.departmentType)
+      formData.append('subDepartment', values.subDepartment)
+      formData.append('branch.branchCode', values.branchCode)
+      formData.append('gender', values.gender.toLowerCase())
+      if (values.image) {
+        formData.append('image', values.image)
+      }
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/faculty/add-faculty`, formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log(response)
       setIsSuccess(true)
       const timer = setInterval(() => {
         setCountdown((prevCount) => {
           if (prevCount <= 1) {
-            clearInterval(timer)   
+            clearInterval(timer)
             router.push(`/departments/${departmentCode}/${departmentName.replace(/\s+/g, '-')}/faculties`)
             return 0
           }
@@ -126,10 +154,13 @@ export default function AddFacultyPage() {
       transition={{ duration: 0.5 }}
       className=""
     >
-      <Card className="w-full mx-auto ">
+      <Card className="w-full mx-auto  h-[85vh]">
         <CardHeader>
-            {/* %20SCIENCE%20ENGINEERING */}
-          <CardTitle className="text-xl font-bold">{`Adding new faculty to ${departmentCode} - ${departmentName.replaceAll("%20", " ").trim().toUpperCase()} Department...`}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-gray-600">
+            Adding New Faculty to
+            <span className="font-extrabold text-black">{` ${departmentCode} - ${departmentName.replaceAll("%20", " ").trim().toUpperCase()} `}</span>
+            Department...
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -156,7 +187,6 @@ export default function AddFacultyPage() {
                         <FormControl>
                           <Input type="file" accept="image/*" onChange={handleImageChange} />
                         </FormControl>
-                        <FormDescription>Upload a profile picture for the faculty member.</FormDescription>
                       </FormItem>
                     )}
                   />
@@ -168,7 +198,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Name</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="John Doe" {...field} className="pl-10" />
+                            <Input placeholder="Faculty name here..." {...field} className="pl-10" />
                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -185,7 +215,7 @@ export default function AddFacultyPage() {
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select gender" />
+                              <SelectValue placeholder="Select gender here..." />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -198,8 +228,11 @@ export default function AddFacultyPage() {
                       </FormItem>
                     )}
                   />
-                  <div className="flex justify-end">
-                    <Button type="button" onClick={handleNext}>Next</Button>
+                  <div className="absolute bottom-2 right-2">
+                    <Button type="button" onClick={handleNext}>
+                      <span className='text-sm'>Next</span>
+                      <MdOutlineQueuePlayNext className='w-4 h-4' />
+                    </Button>
                   </div>
                 </TabsContent>
                 <TabsContent value="professional" className="space-y-4">
@@ -211,7 +244,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Designation</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="Professor" {...field} className="pl-10" />
+                            <Input placeholder="Designation here..." {...field} className="pl-10" />
                             <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -227,7 +260,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Mobile</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="1234567890" {...field} className="pl-10" />
+                            <Input placeholder="Mobile number here..." {...field} className="pl-10" />
                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -243,7 +276,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="john@example.com" {...field} className="pl-10" />
+                            <Input placeholder="Email here..." {...field} className="pl-10" />
                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -258,18 +291,30 @@ export default function AddFacultyPage() {
                       <FormItem>
                         <FormLabel>Salary</FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <Input type="number" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} className="pl-10" />
-                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                          </div>
+                          <Input
+                            type="number"
+                            {...field}
+                            value={field.value || 0}
+                            onChange={(e) => {
+                              const value = e.target.value ? Number(e.target.value) : 0
+                              field.onChange(value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <div className="flex justify-between">
-                    <Button type="button" onClick={handlePrevious}>Previous</Button>
-                    <Button type="button" onClick={handleNext}>Next</Button>
+
+                  <div className="absolute bottom-2 right-2 space-x-2">
+                    <Button type="button" onClick={handlePrevious}>
+                      <span className='text-sm'>Previous</span>
+                      <MdOutlineQueuePlayNext className='w-4 h-4' />
+                    </Button>
+                    <Button type="button" onClick={handleNext}>
+                      <span className='text-sm'>Next</span>
+                      <MdOutlineQueuePlayNext className='w-4 h-4' />
+                    </Button>
                   </div>
                 </TabsContent>
                 <TabsContent value="department" className="space-y-4">
@@ -281,7 +326,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Department Type</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="Electrical Science" {...field} className="pl-10" />
+                            <Input placeholder="Department type here..." {...field} className="pl-10" />
                             <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -297,7 +342,7 @@ export default function AddFacultyPage() {
                         <FormLabel>Sub-Department</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input placeholder="Transformer Engineering" {...field} className="pl-10" />
+                            <Input {...field} placeholder="Sub-department here..." className="pl-10" disabled />
                             <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           </div>
                         </FormControl>
@@ -305,32 +350,41 @@ export default function AddFacultyPage() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
+                    
                     name="branchCode"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Branch</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select branch" />
+                              <SelectValue placeholder="Select branch here..." />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="CS101">Computer Science (CS101)</SelectItem>
-                            <SelectItem value="CS102">Information Technology (CS102)</SelectItem>
-                            <SelectItem value="EE101">Electrical Engineering (EE101)</SelectItem>
-                            <SelectItem value="ME101">Mechanical Engineering (ME101)</SelectItem>
+                            <SelectItem value="CS101">CS101</SelectItem>
+                            <SelectItem value="CS102">CS102</SelectItem>
+                            <SelectItem value="EE101">EE101</SelectItem>
+                            <SelectItem value="ME101">ME101</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <div className="flex justify-between">
-                    <Button type="button" onClick={handlePrevious}>Previous</Button>
-                    <Button type="submit">Add Faculty</Button>
+
+                  <div className="absolute bottom-2 right-2 space-x-2">
+                    <Button type="button" onClick={handlePrevious}>
+                      <span className='text-sm'>Previous</span>
+                      <MdOutlineQueuePlayNext className='w-4 h-4' />
+                    </Button>
+                    <Button type="submit">
+                      <span className='text-sm'>Add Faculty</span>
+                      <IoMdAddCircle className='w-4 h-4' />
+                    </Button>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -353,7 +407,7 @@ export default function AddFacultyPage() {
               </DialogTitle>
               <DialogDescription>
                 <div className='text-slate-500 text-center'>
-                  You are going to redirect to the previous page <br />
+                  You are going to redirect to next page <br />
                   <span className='text-blue-600 font-bold text-lg'>{countdown}</span> seconds
                 </div>
               </DialogDescription>

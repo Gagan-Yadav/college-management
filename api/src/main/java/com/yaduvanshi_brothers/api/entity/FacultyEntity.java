@@ -1,6 +1,5 @@
 package com.yaduvanshi_brothers.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class FacultyEntity {
     private String name;
 
     @Column(name = "faculty_mobile")
-    private long mobile;
+    private Long mobile;
 
     @Column
     private String email;
@@ -48,9 +47,23 @@ public class FacultyEntity {
 
     @ManyToOne
     @JoinColumn(name = "branch_code")
-
     private BranchesEntity branch;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
     private List<LectureEntity> lectures = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private ImageEntity imageEntity;
+
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    private List<OnlineClassEntity> onlineClasses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "announcer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AnnouncementEntity> announcements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "assignedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AssignmentEntity> assignments = new ArrayList<>();
+
+
 }

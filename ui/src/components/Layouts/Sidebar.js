@@ -60,7 +60,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             } transition-colors duration-200`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }} // Smoother hover effect
+            transition={{ duration: 0.4, ease: 'easeInOut' }} 
           >
             <Link href={item.href} className="flex items-center w-full p-3">
               <item.icon size={24} className="text-indigo-200 group-hover:text-white transition-colors" />
@@ -70,7 +70,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.4, ease: 'easeInOut' }} // Smoother text slide-in/out
+                  transition={{ duration: 0.4, ease: 'easeInOut' }} 
                 >
                   {item.text}
                 </motion.span>

@@ -1,6 +1,8 @@
 package com.yaduvanshi_brothers.api.controller;
 
+import com.yaduvanshi_brothers.api.DTOs.AssignmentDTO;
 import com.yaduvanshi_brothers.api.DTOs.LectureDTO;
+import com.yaduvanshi_brothers.api.DTOs.OnlineClassDTO;
 import com.yaduvanshi_brothers.api.DTOs.StudentDTO;
 import com.yaduvanshi_brothers.api.entity.BranchesEntity;
 import com.yaduvanshi_brothers.api.entity.FacultyEntity;
@@ -21,6 +23,8 @@ public class StudentController {
     private StudentService studentService;
 
     // Get all students
+    // Inside StudentController
+
     @GetMapping("/get-all-students")
     public ResponseEntity<List<StudentDTO>> getAllStudents() {
         List<StudentEntity> students = studentService.getAllStudentService();
@@ -63,11 +67,55 @@ public class StudentController {
 
             dto.setLectures(lectureDTOs);
 
+            // Adding Online Classes
+            List<OnlineClassDTO> onlineClassDTOs = student.getOnlineClasses().stream().map(onlineClass -> {
+                OnlineClassDTO onlineClassDTO = new OnlineClassDTO();
+                onlineClassDTO.setOnlineLectureId(onlineClass.getOnlineLectureId());
+                onlineClassDTO.setSubject(onlineClass.getSubject());
+                onlineClassDTO.setBranchCode(onlineClass.getBranch().getBranchCode()); // Now this will work
+                onlineClassDTO.setSemester(onlineClass.getSemester());
+                onlineClassDTO.setPlatforms(onlineClass.getPlatforms());
+                onlineClassDTO.setMeetingLink(onlineClass.getMeetingLink());
+                onlineClassDTO.setStartFrom(onlineClass.getStartFrom());
+                onlineClassDTO.setEnd(onlineClass.getEnd());
+
+                FacultyEntity faculty = onlineClass.getFaculty();
+                if (faculty != null) {
+                    onlineClassDTO.setFacultyId(faculty.getFacultyId());
+                }
+
+                return onlineClassDTO;
+            }).collect(Collectors.toList());
+
+            dto.setOnlineClasses(onlineClassDTOs); // Assuming you have a corresponding setter in StudentDTO
+
+            List<AssignmentDTO> assignmentDTOs = student.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setQuestions(assignment.getQuestions());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setCategory(assignment.getCategory());
+                assignmentDTO.setStatus(assignment.getStatus());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                assignmentDTO.setDifficultyLevel(assignment.getDifficultyLevel());
+                assignmentDTO.setNotes(assignment.getNotes());
+
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs);
+
             return dto;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(studentDTOs);
     }
+
 
     @GetMapping("/get-student/{id}")
     public ResponseEntity<StudentDTO> getStudentById(@PathVariable int id) {
@@ -91,10 +139,88 @@ public class StudentController {
                 dto.setBranchCode(branch.getBranchCode());
             }
 
+            List<LectureDTO> lectureDTOs = student.getLectures().stream().map(lecture -> {
+                LectureDTO lectureDTO = new LectureDTO();
+                lectureDTO.setLectureId(lecture.getLectureId());
+                lectureDTO.setYear(lecture.getYear());
+                lectureDTO.setSemester(lecture.getSemester());
+                lectureDTO.setDepartment(lecture.getDepartment());
+                lectureDTO.setSubject(lecture.getSubject());
+                lectureDTO.setStartFrom(lecture.getStartFrom());
+                lectureDTO.setTill(lecture.getTill());
+                lectureDTO.setRoomNumber(lecture.getRoomNumber());
+
+                FacultyEntity faculty = lecture.getFaculty();
+                if (faculty != null) {
+                    lectureDTO.setFacultyId(faculty.getFacultyId());
+                }
+
+                return lectureDTO;
+            }).collect(Collectors.toList());
+
+            dto.setLectures(lectureDTOs);
+
+            // Fetching online classes
+            List<OnlineClassDTO> onlineClassDTOs = student.getOnlineClasses().stream().map(onlineClass -> {
+                OnlineClassDTO onlineClassDTO = new OnlineClassDTO();
+                onlineClassDTO.setOnlineLectureId(onlineClass.getOnlineLectureId());
+                onlineClassDTO.setSubject(onlineClass.getSubject());
+                onlineClassDTO.setBranchCode(onlineClass.getBranch().getBranchCode());
+                onlineClassDTO.setSemester(onlineClass.getSemester());
+                onlineClassDTO.setPlatforms(onlineClass.getPlatforms());
+                onlineClassDTO.setMeetingLink(onlineClass.getMeetingLink());
+                onlineClassDTO.setStartFrom(onlineClass.getStartFrom());
+                onlineClassDTO.setEnd(onlineClass.getEnd());
+
+                FacultyEntity faculty = onlineClass.getFaculty();
+                if (faculty != null) {
+                    onlineClassDTO.setFacultyId(faculty.getFacultyId());
+                }
+
+                return onlineClassDTO;
+            }).collect(Collectors.toList());
+
+            dto.setOnlineClasses(onlineClassDTOs); // Set the online classes in the DTO
+
+            List<AssignmentDTO> assignmentDTOs = student.getAssignments().stream().map(assignment -> {
+                AssignmentDTO assignmentDTO = new AssignmentDTO();
+                assignmentDTO.setId(assignment.getId());
+                assignmentDTO.setYear(assignment.getYear());
+                assignmentDTO.setSemester(assignment.getSemester());
+                assignmentDTO.setSubject(assignment.getSubject());
+                assignmentDTO.setStartDate(assignment.getStartDate());
+                assignmentDTO.setEndDate(assignment.getEndDate());
+                assignmentDTO.setQuestions(assignment.getQuestions());
+                assignmentDTO.setAssignmentType(assignment.getAssignmentType());
+                assignmentDTO.setCategory(assignment.getCategory());
+                assignmentDTO.setStatus(assignment.getStatus());
+                assignmentDTO.setTotalMarks(assignment.getTotalMarks());
+                assignmentDTO.setDifficultyLevel(assignment.getDifficultyLevel());
+                assignmentDTO.setNotes(assignment.getNotes());
+
+                return assignmentDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignmentDTOs);
+
             return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+
+    @PostMapping("/update-student/{studentId}")
+    public ResponseEntity<StudentDTO> updateStudentById(@PathVariable int studentId, @RequestBody StudentDTO studentDTO) {
+        StudentDTO updatedStudent = studentService.updateStudentService(studentId, studentDTO);
+        return ResponseEntity.ok(updatedStudent);
+    }
+
+    // Delete student by ID
+    @DeleteMapping("/delete-student/{studentId}")
+    public ResponseEntity<String> deleteStudentById(@PathVariable int studentId) {
+        studentService.deleteStudentService(studentId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Student and all associations deleted successfully.");
     }
 
     @PostMapping("/add-student")
@@ -125,17 +251,4 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Student added successfully");
     }
 
-
-    @PutMapping("/update-student/{id}")
-    public ResponseEntity<StudentDTO> updateStudent(@PathVariable int id, @RequestBody StudentEntity studentEntity) {
-        studentEntity.setStudentId(id);
-        studentService.updateStudentById(studentEntity);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/delete-student/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable int id) {
-        studentService.deleteStudentById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

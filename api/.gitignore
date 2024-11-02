@@ -1,3 +1,4 @@
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -12,13 +13,14 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+#*.yml
+*.log
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
+/htmlReport
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,10 +33,4 @@ build/
 
 ### VS Code ###
 .vscode/
-
-pom.xml
-application.yml
-application-dev.yml
-application-prod.yml
-
-
+.idea/

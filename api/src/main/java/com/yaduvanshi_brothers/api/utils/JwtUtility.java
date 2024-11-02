@@ -3,6 +3,7 @@ package com.yaduvanshi_brothers.api.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -14,7 +15,9 @@ import java.util.Map;
 @Component
 public class JwtUtility {
 
-    private static final String SECRET_KEY = "NbIfb2S2K3ysIv2QO4IugWbuu-3m_BRd1IVJlaiBiRM";
+    @Value("${jwt-secret-key}")
+    private String SECRET_KEY;
+
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();

@@ -38,4 +38,7 @@ public class BranchesEntity {
 
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
     private List<StudentEntity> students = new ArrayList<>();
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AnnouncementEntity> announcements = new ArrayList<>();
 }
