@@ -106,6 +106,14 @@ public class OnlineClassService {
         return onlineClasses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+
+    public OnlineClassDTO getOnlineClassById(int id) {
+        OnlineClassEntity onlineClass = onlineClassRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Online class not found"));
+        return convertToDTO(onlineClass);
+    }
+
+
     private OnlineClassDTO convertToDTO(OnlineClassEntity onlineClass) {
         OnlineClassDTO dto = new OnlineClassDTO();
         dto.setOnlineLectureId(onlineClass.getOnlineLectureId());

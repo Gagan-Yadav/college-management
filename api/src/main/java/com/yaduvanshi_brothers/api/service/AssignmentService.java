@@ -111,6 +111,7 @@ public class AssignmentService {
         assignmentEntity.setId(assignmentDTO.getId());
         assignmentEntity.setYear(assignmentDTO.getYear());
         assignmentEntity.setSemester(assignmentDTO.getSemester());
+        assignmentEntity.setTopic(assignmentDTO.getTopic());
         assignmentEntity.setBranchCode(branchRepository.findByBranchCode(assignmentDTO.getBranchCode()));
         assignmentEntity.setSubject(assignmentDTO.getSubject());
 
@@ -142,6 +143,7 @@ public class AssignmentService {
     private void mapDtoToEntityForUpdate(AssignmentEntity entity, AssignmentDTO dto) {
         entity.setYear(dto.getYear());
         entity.setSemester(dto.getSemester());
+        entity.setTopic(dto.getTopic());
         entity.setBranchCode(branchRepository.findByBranchCode(dto.getBranchCode()));
         entity.setSubject(dto.getSubject());
         if (dto.getAssignedBy() != null) {
@@ -162,6 +164,7 @@ public class AssignmentService {
         AssignmentDTO dto = new AssignmentDTO();
         dto.setId(entity.getId());
         dto.setYear(entity.getYear());
+        dto.setTopic(entity.getTopic());
         dto.setSemester(entity.getSemester());
         dto.setSubject(entity.getSubject());
         if (entity.getStudents() != null) {
@@ -207,7 +210,7 @@ public class AssignmentService {
         dto.setNotes(entity.getNotes());
 
         if (entity.getAttachedFiles() != null) {
-            dto.setDownloadUrl("/download-file/"+entity.getId()+"/" + entity.getFileName());
+            dto.setDownloadUrl("/download-file/"+entity.getId());
         }
         return dto;
     }

@@ -31,9 +31,9 @@ public class SpringSecurity {
         System.out.println("spring security starting ....");
         return http.authorizeHttpRequests(request -> request
                                 .requestMatchers("/public/**").permitAll()
-                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**","/online-classes/**","/announcements/**","/one-time-mail/**","/assignments/**").hasRole("ADMIN")
-                                .requestMatchers("/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**","/online-classes/**","/announcements/**","/one-time-mail/**","/assignments/**").hasRole("FACULTY")
-                                .requestMatchers("/student/**","/lectures/**").hasRole("STUDENT")
+                                .requestMatchers("/admin/**","/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**","/online-classes/**","/announcements/**","/one-time-mail/**","/assignments/**","/files/**").hasRole("ADMIN")
+                                .requestMatchers("/branch/**","/faculty/**","/student/**","/lectures/**","/send-mail/**","/image/**","/online-classes/**","/announcements/**","/one-time-mail/**","/assignments/**","/files/**").hasRole("FACULTY")
+                                .requestMatchers("/student/**","/lectures/**","/files/**").hasRole("STUDENT")
 
                 )
                 .csrf(AbstractHttpConfigurer::disable)

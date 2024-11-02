@@ -20,6 +20,8 @@ public class AssignmentEntity {
     private Integer year;
     private Integer semester;
 
+    private String topic;
+
     @ManyToOne
     @JoinColumn(name = "branch_code")
     private BranchesEntity branchCode;

@@ -34,6 +34,12 @@ public class OnlineClassController {
         return ResponseEntity.ok(classes);
     }
 
+    @GetMapping("/get-online-class-by-id/{id}")
+    public ResponseEntity<OnlineClassDTO> getOnlineClassById(@PathVariable int id) {
+        OnlineClassDTO onlineClassDTO = onlineClassService.getOnlineClassById(id);
+        return ResponseEntity.ok(onlineClassDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOnlineClass(@PathVariable int id) {
         onlineClassService.deleteOnlineClassById(id);

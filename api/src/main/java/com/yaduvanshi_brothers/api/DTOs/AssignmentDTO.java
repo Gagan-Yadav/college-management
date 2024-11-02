@@ -13,6 +13,7 @@ public class AssignmentDTO {
     private Integer id;
     private Integer year;
     private Integer semester;
+    private String topic;
     private String branchCode;
     private String subject;
     private FacultyDTO assignedBy;
