@@ -33,7 +33,7 @@ public class SpringSecurity {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("spring security starting ....");
+        System.out.println("spring security starting Gagan ....");
 
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Enables CORS with custom configuration
@@ -57,7 +57,7 @@ public class SpringSecurity {
             "https://college-management-eight.vercel.app",
             "https://college-management-0127cs211009-gmailcoms-projects.vercel.app",
             "https://college-management-git-main-0127cs211009-gmailcoms-projects.vercel.app",
-            "https://college-management-brrb.onrender.com"  // Backend URL added for CORS
+            "https://college-management-1-oxjm.onrender.com"  // Backend URL added for CORS
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Cache-Control", "Pragma"));
